@@ -1,0 +1,432 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		06A4231DD752523E72C88A49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2DABCE4158A8A04A148E66C /* Assets.xcassets */; };
+		1E9E5E2B25B8362C4D5E4534 /* BojioSGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422353DFA0A5420D382D5A5E /* BojioSGApp.swift */; };
+		231DB9B02F09FC0CCA9CF51F /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF056B372B300B403AB57CC1 /* EventViewModel.swift */; };
+		376CA51C7D0A64464D17C6C2 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A71DF0FE242B955664EF5E /* AuthService.swift */; };
+		45DCDE7CD140C96F2324282A /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1DC4F171335ECFECCB0C77 /* Event.swift */; };
+		6C286613D844B675D9E4C6DA /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2625C2709B6CB29E38EC979 /* EventDetailView.swift */; };
+		72744AA308C80BFD69708323 /* EventListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3D165ACB3CF5C2EAE5F7B8 /* EventListView.swift */; };
+		99492A4C4DBF5E4182FA80C6 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF8FCC90260C236254E676C /* AuthViewModel.swift */; };
+		AB4C61DC79E04B4EF7466199 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7BBFDD8D01099E2B292615 /* LoginView.swift */; };
+		AB96A20F3A31CDA8898E44B8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77A31AABD18D9BE8A5509DA /* APIClient.swift */; };
+		B7B5999279D809699B4BF286 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5234A9C0E773CEEE091B449 /* User.swift */; };
+		B95E389B6B1BC33809B21080 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7B7EF55F6FEE68185485EA /* RegisterView.swift */; };
+		C343FB8D9D7B6C2D2AC4D765 /* EventRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF195EA7DA6834C6A470193 /* EventRowView.swift */; };
+		CA720B2795D0970404AF4068 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7668D7B0296776C361F7E04F /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3F7B7EF55F6FEE68185485EA /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		422353DFA0A5420D382D5A5E /* BojioSGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojioSGApp.swift; sourceTree = "<group>"; };
+		58853872827BB3C62BFBC20C /* BojioSG.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BojioSG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B3D165ACB3CF5C2EAE5F7B8 /* EventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListView.swift; sourceTree = "<group>"; };
+		5F7BBFDD8D01099E2B292615 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		7668D7B0296776C361F7E04F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8B1DC4F171335ECFECCB0C77 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		9FF195EA7DA6834C6A470193 /* EventRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRowView.swift; sourceTree = "<group>"; };
+		A2DABCE4158A8A04A148E66C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B5234A9C0E773CEEE091B449 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		CBF8FCC90260C236254E676C /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		D2625C2709B6CB29E38EC979 /* EventDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailView.swift; sourceTree = "<group>"; };
+		E2A71DF0FE242B955664EF5E /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		E77A31AABD18D9BE8A5509DA /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		FF056B372B300B403AB57CC1 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1137B564296AE3407451C579 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E77A31AABD18D9BE8A5509DA /* APIClient.swift */,
+				E2A71DF0FE242B955664EF5E /* AuthService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		3AF49F9D8B1C4553984FE450 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				7668D7B0296776C361F7E04F /* ContentView.swift */,
+				DDBA24F03276770AEBF6BA49 /* Auth */,
+				852F15D41405421078C359B8 /* Events */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		69762B8891750E54DF9CCAD0 = {
+			isa = PBXGroup;
+			children = (
+				87013159BF756A0069BA1188 /* BojioSG */,
+				7F033EE1F2C1F6C9680BB664 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7E92F0EC4AB855F0099EEE06 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8B1DC4F171335ECFECCB0C77 /* Event.swift */,
+				B5234A9C0E773CEEE091B449 /* User.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7F033EE1F2C1F6C9680BB664 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				58853872827BB3C62BFBC20C /* BojioSG.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		852F15D41405421078C359B8 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				D2625C2709B6CB29E38EC979 /* EventDetailView.swift */,
+				5B3D165ACB3CF5C2EAE5F7B8 /* EventListView.swift */,
+				9FF195EA7DA6834C6A470193 /* EventRowView.swift */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
+		87013159BF756A0069BA1188 /* BojioSG */ = {
+			isa = PBXGroup;
+			children = (
+				BDB2F021CA61FA0743117744 /* App */,
+				7E92F0EC4AB855F0099EEE06 /* Models */,
+				E6699F2BBD8351C0506E4653 /* Resources */,
+				1137B564296AE3407451C579 /* Services */,
+				E880F3C0B5F80E7892DB01C3 /* ViewModels */,
+				3AF49F9D8B1C4553984FE450 /* Views */,
+			);
+			path = BojioSG;
+			sourceTree = "<group>";
+		};
+		BDB2F021CA61FA0743117744 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				422353DFA0A5420D382D5A5E /* BojioSGApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		DDBA24F03276770AEBF6BA49 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				5F7BBFDD8D01099E2B292615 /* LoginView.swift */,
+				3F7B7EF55F6FEE68185485EA /* RegisterView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		E6699F2BBD8351C0506E4653 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A2DABCE4158A8A04A148E66C /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E880F3C0B5F80E7892DB01C3 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				CBF8FCC90260C236254E676C /* AuthViewModel.swift */,
+				FF056B372B300B403AB57CC1 /* EventViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9F30C2FA643F3A1DB8DB175E /* BojioSG */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B15AB21BEF876E5D1A95A20 /* Build configuration list for PBXNativeTarget "BojioSG" */;
+			buildPhases = (
+				F1539827CCDA0262B0905796 /* Sources */,
+				DA23CB0D550E581EF2C99E40 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BojioSG;
+			packageProductDependencies = (
+			);
+			productName = BojioSG;
+			productReference = 58853872827BB3C62BFBC20C /* BojioSG.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		178529A9307B0B1986E26005 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = C2C259D1200A24ED4676E449 /* Build configuration list for PBXProject "BojioSG" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 69762B8891750E54DF9CCAD0;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7F033EE1F2C1F6C9680BB664 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9F30C2FA643F3A1DB8DB175E /* BojioSG */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DA23CB0D550E581EF2C99E40 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				06A4231DD752523E72C88A49 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F1539827CCDA0262B0905796 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB96A20F3A31CDA8898E44B8 /* APIClient.swift in Sources */,
+				376CA51C7D0A64464D17C6C2 /* AuthService.swift in Sources */,
+				99492A4C4DBF5E4182FA80C6 /* AuthViewModel.swift in Sources */,
+				1E9E5E2B25B8362C4D5E4534 /* BojioSGApp.swift in Sources */,
+				CA720B2795D0970404AF4068 /* ContentView.swift in Sources */,
+				45DCDE7CD140C96F2324282A /* Event.swift in Sources */,
+				6C286613D844B675D9E4C6DA /* EventDetailView.swift in Sources */,
+				72744AA308C80BFD69708323 /* EventListView.swift in Sources */,
+				C343FB8D9D7B6C2D2AC4D765 /* EventRowView.swift in Sources */,
+				231DB9B02F09FC0CCA9CF51F /* EventViewModel.swift in Sources */,
+				AB4C61DC79E04B4EF7466199 /* LoginView.swift in Sources */,
+				B95E389B6B1BC33809B21080 /* RegisterView.swift in Sources */,
+				B7B5999279D809699B4BF286 /* User.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		35C289A5CF6F04194A803616 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bojiosg.BojioSG;
+				PRODUCT_NAME = BojioSG;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		54D64EFDEF8854752A66E856 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A402D30AFC4289A50ED3FF22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bojiosg.BojioSG;
+				PRODUCT_NAME = BojioSG;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BD81AA9225095349A161CAD9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4B15AB21BEF876E5D1A95A20 /* Build configuration list for PBXNativeTarget "BojioSG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A402D30AFC4289A50ED3FF22 /* Debug */,
+				35C289A5CF6F04194A803616 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C2C259D1200A24ED4676E449 /* Build configuration list for PBXProject "BojioSG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BD81AA9225095349A161CAD9 /* Debug */,
+				54D64EFDEF8854752A66E856 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 178529A9307B0B1986E26005 /* Project object */;
+}

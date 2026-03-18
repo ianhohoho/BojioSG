@@ -1,0 +1,21 @@
+import SwiftUI
+
+struct ContentView: View {
+    @Environment(AuthService.self) private var authService
+
+    var body: some View {
+        Group {
+            if authService.isAuthenticated {
+                EventListView()
+            } else {
+                LoginView()
+            }
+        }
+        .animation(.easeInOut, value: authService.isAuthenticated)
+    }
+}
+
+#Preview {
+    ContentView()
+        .environment(AuthService())
+}
