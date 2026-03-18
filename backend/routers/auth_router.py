@@ -32,7 +32,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
-    access_token = create_access_token(data={"sub": user.id})
+    access_token = create_access_token(data={"sub": str(user.id)})
     return Token(access_token=access_token, token_type="bearer")
 
 
@@ -45,5 +45,5 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
             detail="Invalid username or password",
         )
 
-    access_token = create_access_token(data={"sub": user.id})
+    access_token = create_access_token(data={"sub": str(user.id)})
     return Token(access_token=access_token, token_type="bearer")

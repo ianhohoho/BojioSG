@@ -3,6 +3,7 @@ import SwiftUI
 struct EventListView: View {
     @Environment(AuthService.self) private var authService
     @State private var viewModel = EventViewModel()
+    @State private var showingCreateSheet = false
 
     var body: some View {
         NavigationStack {
@@ -56,13 +57,25 @@ struct EventListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        authService.clearToken()
-                    } label: {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                            .foregroundStyle(.secondary)
+                    HStack(spacing: 12) {
+                        Button {
+                            showingCreateSheet = true
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(Color.accentColor)
+                        }
+
+                        Button {
+                            authService.clearToken()
+                        } label: {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
+            }
+            .sheet(isPresented: $showingCreateSheet) {
+                CreateEventView(viewModel: viewModel)
             }
             .task {
                 await viewModel.fetchEvents(token: authService.token)

@@ -78,6 +78,23 @@ struct Event: Codable, Identifiable {
     }()
 }
 
+struct EventCreate: Encodable {
+    let title: String
+    let description: String
+    let sportType: String
+    let location: String
+    let dateTime: String
+    let price: Double
+    let maxParticipants: Int
+
+    enum CodingKeys: String, CodingKey {
+        case title, description, location, price
+        case sportType = "sport_type"
+        case dateTime = "date_time"
+        case maxParticipants = "max_participants"
+    }
+}
+
 struct JoinResponse: Codable {
     let message: String
 }

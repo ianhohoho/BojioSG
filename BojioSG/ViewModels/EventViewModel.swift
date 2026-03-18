@@ -28,6 +28,32 @@ final class EventViewModel {
         isLoading = false
     }
 
+    func createEvent(_ event: EventCreate, token: String?) async -> Bool {
+        guard let token else {
+            errorMessage = "You must be logged in to create an event"
+            return false
+        }
+
+        errorMessage = nil
+
+        do {
+            let _: Event = try await apiClient.request(
+                path: "/events",
+                method: "POST",
+                body: event,
+                token: token
+            )
+            await fetchEvents(token: token)
+            return true
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+            return false
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
+    }
+
     func joinEvent(eventId: Int, token: String?) async {
         guard let token else {
             errorMessage = "You must be logged in to join an event"
