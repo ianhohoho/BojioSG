@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="120" alt="BojioSG logo">
+</p>
+
 # BojioSG
 
 **"Don't say bojio!"** — A social sports event app for Singapore. Discover, join, and organise paid activities like pickleball, badminton, tennis, and basketball. No one gets left out.
