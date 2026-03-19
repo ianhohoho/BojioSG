@@ -7,8 +7,12 @@ extension View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(.background)
+                    .fill(Color(.secondarySystemBackground))
                     .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(Color(.separator).opacity(0.3), lineWidth: 0.5)
             )
     }
 }
