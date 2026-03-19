@@ -31,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		28E21CE74BDA1461106145A7 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		336A2924245BED77E797CF22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3F7B7EF55F6FEE68185485EA /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		422353DFA0A5420D382D5A5E /* BojioSGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojioSGApp.swift; sourceTree = "<group>"; };
 		58853872827BB3C62BFBC20C /* BojioSG.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BojioSG.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,6 +116,7 @@
 		87013159BF756A0069BA1188 /* BojioSG */ = {
 			isa = PBXGroup;
 			children = (
+				336A2924245BED77E797CF22 /* Info.plist */,
 				BDB2F021CA61FA0743117744 /* App */,
 				7E92F0EC4AB855F0099EEE06 /* Models */,
 				E6699F2BBD8351C0506E4653 /* Resources */,
@@ -277,6 +279,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BojioSG/Info.plist;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -362,6 +365,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BojioSG/Info.plist;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -86,3 +86,18 @@ xcodegen generate
 
 ## API Base URL
 - Development: `http://localhost:8000`
+- Production: `https://bojiosg-api.fly.dev`
+- iOS uses `#if DEBUG` to select: localhost for debug builds, production for release
+
+## Deployment (Fly.io)
+```bash
+# Run unit tests, deploy, and smoke test (via /deploy skill)
+cd backend && source venv/bin/activate && python -m pytest tests/ -v
+cd backend && fly deploy --local-only
+python test_remote.py http://localhost:8000
+python test_remote.py https://bojiosg-api.fly.dev
+```
+- App: `bojiosg-api`, region: `sin` (Singapore)
+- Config: `backend/fly.toml`, `backend/Dockerfile`, `backend/.dockerignore`
+- Secrets set via `fly secrets set` (DB_USER, DB_PASSWORD, etc.)
+- Smoke tests: `backend/test_remote.py` — 10 tests against any live endpoint

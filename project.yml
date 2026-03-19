@@ -12,6 +12,14 @@ targets:
     platform: iOS
     sources:
       - BojioSG
+    info:
+      path: BojioSG/Info.plist
+      properties:
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+          NSExceptionDomains:
+            localhost:
+              NSExceptionAllowsInsecureHTTPLoads: true
     settings:
       base:
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES

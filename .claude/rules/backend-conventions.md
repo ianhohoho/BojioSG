@@ -43,6 +43,10 @@ backend/
 ├── flyway.sh          # Wrapper script (loads .env, runs flyway)
 ├── sql/migrations/    # Flyway SQL migrations (V1__, V2__, ...)
 ├── .env               # DB credentials (not committed)
+├── Dockerfile         # Docker image for Fly.io deployment
+├── fly.toml           # Fly.io app config (bojiosg-api, region sin)
+├── .dockerignore      # Docker build exclusions
+├── test_remote.py     # Smoke tests for live endpoints
 ├── routers/
 │   ├── auth_router.py          # /auth/register, /auth/login, /auth/me (profile)
 │   ├── events_router.py        # CRUD /events, join/approve/remove/leave
@@ -75,6 +79,14 @@ backend/
 - Helper functions: `login(client, username)` returns token, `auth_header(token)` returns header dict.
 - Import helpers as `from tests.conftest import auth_header, login` (not bare `from conftest`).
 - `TestClient.delete()` doesn't support `json` kwarg — use `client.request("DELETE", ..., json=...)`.
+
+## Deployment (Fly.io)
+- Production hosted on Fly.io: app `bojiosg-api`, region `sin` (Singapore).
+- Config: `backend/fly.toml`. Docker: `backend/Dockerfile`, `backend/.dockerignore`.
+- Deploy: `fly deploy --local-only` (remote builder blocked by Cloudflare Gateway on dev network).
+- Secrets: `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `SECRET_KEY` set via `fly secrets set`.
+- Smoke tests: `backend/test_remote.py` — run against any base URL to verify endpoints.
+- Deploy skill: `.claude/skills/deploy/SKILL.md` — runs unit tests → deploy → smoke tests (local + production).
 
 ## Notifications
 - `Notification` model: `id, user_id (FK), event_id (FK), type, message, reason, is_read (Boolean), created_at`.
