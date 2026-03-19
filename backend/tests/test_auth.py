@@ -12,7 +12,7 @@ class TestRegister:
         assert data["token_type"] == "bearer"
         assert data["user_id"]
         assert data["username"] == "newuser"
-        assert data["nickname"] is None
+        assert data["nickname"] == "newuser"
 
     def test_register_duplicate_username(self, client, seed_users):
         r = client.post("/auth/register", json={"username": "admin", "password": "anything"})
