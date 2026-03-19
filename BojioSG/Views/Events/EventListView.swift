@@ -4,13 +4,13 @@ enum EventFilter: String, CaseIterable {
     case all = "All"
     case organised = "Organised"
     case joined = "Joined"
-    case pending = "Pending"
 }
 
 struct EventListView: View {
     @Environment(AuthService.self) private var authService
     @State private var viewModel = EventViewModel()
     @State private var showingCreateSheet = false
+    @State private var showingProfileSheet = false
     @State private var filter: EventFilter = .all
 
     private var filteredEvents: [Event] {
@@ -20,9 +20,7 @@ struct EventListView: View {
         case .organised:
             return viewModel.events.filter { $0.isOrganizer == true }
         case .joined:
-            return viewModel.events.filter { $0.isApproved }
-        case .pending:
-            return viewModel.events.filter { $0.isPending }
+            return viewModel.events.filter { $0.isJoinedOrPending }
         }
     }
 
@@ -31,7 +29,6 @@ struct EventListView: View {
         case .all: return "calendar.badge.exclamationmark"
         case .organised: return "star"
         case .joined: return "person.2"
-        case .pending: return "clock"
         }
     }
 
@@ -40,7 +37,6 @@ struct EventListView: View {
         case .all: return "No events available right now."
         case .organised: return "You haven't organised any events yet."
         case .joined: return "You haven't joined any events yet."
-        case .pending: return "You have no pending requests."
         }
     }
 
@@ -128,6 +124,13 @@ struct EventListView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 12) {
                         Button {
+                            showingProfileSheet = true
+                        } label: {
+                            Image(systemName: "person.circle.fill")
+                                .foregroundStyle(Color.accentColor)
+                        }
+
+                        Button {
                             showingCreateSheet = true
                         } label: {
                             Image(systemName: "plus.circle.fill")
@@ -142,6 +145,9 @@ struct EventListView: View {
                         }
                     }
                 }
+            }
+            .sheet(isPresented: $showingProfileSheet) {
+                ProfileView()
             }
             .sheet(isPresented: $showingCreateSheet) {
                 CreateEventView(viewModel: viewModel)

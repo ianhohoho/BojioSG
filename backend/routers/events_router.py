@@ -32,7 +32,7 @@ def _event_to_response(event: Event, current_user: User | None = None) -> EventR
             participants = [
                 ParticipantResponse(
                     id=p.user.id,
-                    username=p.user.username,
+                    username=p.user.nickname or p.user.username,
                     status=p.status,
                     joined_at=p.joined_at,
                 )
@@ -50,7 +50,7 @@ def _event_to_response(event: Event, current_user: User | None = None) -> EventR
         max_participants=event.max_participants,
         current_participants=approved_count,
         organizer_id=event.organizer_id,
-        organizer_username=event.organizer.username,
+        organizer_username=event.organizer.nickname or event.organizer.username,
         is_organizer=is_organizer,
         join_status=join_status,
         participants=participants,

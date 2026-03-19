@@ -96,18 +96,31 @@ struct Event: Codable, Identifiable {
     var formattedDate: String {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        guard let date = formatter.date(from: dateTime) else {
-            // Try without fractional seconds
-            formatter.formatOptions = [.withInternetDateTime]
-            guard let date = formatter.date(from: dateTime) else { return dateTime }
+        if let date = formatter.date(from: dateTime) {
             return Self.displayFormatter.string(from: date)
         }
-        return Self.displayFormatter.string(from: date)
+        // Try without fractional seconds
+        formatter.formatOptions = [.withInternetDateTime]
+        if let date = formatter.date(from: dateTime) {
+            return Self.displayFormatter.string(from: date)
+        }
+        // Try naive datetime (Python format without timezone)
+        if let date = Self.naiveDateFormatter.date(from: dateTime) {
+            return Self.displayFormatter.string(from: date)
+        }
+        return dateTime
     }
 
     private static let displayFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd hh:mm a"
+        return f
+    }()
+
+    private static let naiveDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        f.locale = Locale(identifier: "en_US_POSIX")
         return f
     }()
 }

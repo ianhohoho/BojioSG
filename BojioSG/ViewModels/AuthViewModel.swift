@@ -28,7 +28,8 @@ final class AuthViewModel {
             authService.setAuth(
                 token: response.accessToken,
                 userId: response.userId,
-                username: response.username
+                username: response.username,
+                nickname: response.nickname
             )
         } catch let error as APIError {
             errorMessage = error.errorDescription
@@ -63,7 +64,8 @@ final class AuthViewModel {
             authService.setAuth(
                 token: response.accessToken,
                 userId: response.userId,
-                username: response.username
+                username: response.username,
+                nickname: response.nickname
             )
         } catch let error as APIError {
             errorMessage = error.errorDescription

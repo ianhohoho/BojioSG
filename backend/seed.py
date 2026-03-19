@@ -12,28 +12,29 @@ Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
 
-def get_or_create_user(username: str, password: str = "password123") -> User:
+def get_or_create_user(username: str, password: str = "password123", nickname: str | None = None) -> User:
     user = db.query(User).filter(User.username == username).first()
     if not user:
         user = User(
             username=username,
             password_hash=hash_password(password),
+            nickname=nickname,
         )
         db.add(user)
         db.commit()
         db.refresh(user)
-        print(f"Created user: {username} (id={user.id})")
+        print(f"Created user: {username} (id={user.id}, nickname={nickname})")
     else:
         print(f"User already exists: {username} (id={user.id})")
     return user
 
 
 # Create users (password = username for all)
-admin = get_or_create_user("admin", "admin")
-alice = get_or_create_user("alice", "alice")
-bob = get_or_create_user("bob", "bob")
-charlie = get_or_create_user("charlie", "charlie")
-diana = get_or_create_user("diana", "diana")
+admin = get_or_create_user("admin", "admin", nickname="Admin")
+alice = get_or_create_user("alice", "alice", nickname="Alice Tan")
+bob = get_or_create_user("bob", "bob", nickname="Bobby")
+charlie = get_or_create_user("charlie", "charlie", nickname="Charlie Lim")
+diana = get_or_create_user("diana", "diana", nickname="Diana")
 
 # Sample events
 now = datetime.now(timezone.utc)

@@ -12,6 +12,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    nickname = Column(String, nullable=True)
+    phone_number = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     organized_events = relationship("Event", back_populates="organizer")

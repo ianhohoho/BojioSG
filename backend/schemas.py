@@ -27,6 +27,22 @@ class Token(BaseModel):
     token_type: str
     user_id: int
     username: str
+    nickname: str | None = None
+
+
+class ProfileResponse(BaseModel):
+    id: int
+    username: str
+    nickname: str | None = None
+    phone_number: str | None = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ProfileUpdate(BaseModel):
+    nickname: str | None = None
+    phone_number: str | None = None
 
 
 # Event schemas
