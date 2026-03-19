@@ -30,11 +30,7 @@ struct EventDetailView: View {
                         .frame(height: 180)
 
                         VStack(alignment: .leading, spacing: 8) {
-                            Label(event.sportType.capitalized, systemImage: event.sportIcon)
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
+                            StatusPill(label: event.sportType.capitalized, color: .white, icon: event.sportIcon)
                                 .background(.ultraThinMaterial)
                                 .clipShape(Capsule())
 
@@ -83,11 +79,7 @@ struct EventDetailView: View {
                                 value: event.organizerUsername
                             )
                         }
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(.background)
-                                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-                        )
+                        .cardStyle()
 
                         // About section
                         VStack(alignment: .leading, spacing: 10) {
@@ -98,13 +90,7 @@ struct EventDetailView: View {
                                 .foregroundStyle(.secondary)
                                 .lineSpacing(4)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(.background)
-                                .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-                        )
+                        .cardStyle()
 
                         // Participants list (organizer only)
                         if event.isOrganizer == true, let participants = event.participants {
@@ -176,13 +162,7 @@ struct EventDetailView: View {
                                         .padding(.vertical, 4)
                                     }
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(16)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(.background)
-                                        .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-                                )
+                                .cardStyle()
                             }
 
                             // Awaiting payment
@@ -261,13 +241,7 @@ struct EventDetailView: View {
                                         .padding(.vertical, 4)
                                     }
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(16)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(.background)
-                                        .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-                                )
+                                .cardStyle()
                             }
 
                             // Confirmed participants
@@ -333,69 +307,27 @@ struct EventDetailView: View {
                                     }
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(16)
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(.background)
-                                    .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-                            )
+                            .cardStyle()
                         }
 
                         // Status messages
                         if event.isOrganizer != true, let joinMessage = viewModel.joinMessage {
-                            HStack(spacing: 8) {
-                                Image(systemName: "checkmark.circle.fill")
-                                Text(joinMessage)
-                            }
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.green)
-                            .frame(maxWidth: .infinity)
-                            .padding(14)
-                            .background(.green.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            AlertBanner(message: joinMessage, style: .success)
+                                .fontWeight(.medium)
+                                .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
 
                         if let error = viewModel.errorMessage {
-                            HStack(spacing: 8) {
-                                Image(systemName: "exclamationmark.circle.fill")
-                                Text(error)
-                            }
-                            .font(.subheadline)
-                            .foregroundStyle(.red)
-                            .frame(maxWidth: .infinity)
-                            .padding(14)
-                            .background(.red.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            AlertBanner(message: error, style: .error)
+                                .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
 
                         // Action area
                         if event.isOrganizer == true {
-                            HStack(spacing: 8) {
-                                Image(systemName: "star.fill")
-                                Text("You're the organizer")
-                            }
-                            .font(.headline)
-                            .foregroundStyle(.indigo)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 52)
-                            .background(.indigo.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            StatusBanner(icon: "star.fill", label: "You're the organizer", color: .indigo)
                         } else if event.isApproved, viewModel.joinMessage == nil {
                             VStack(spacing: 10) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                    Text("You've joined this event")
-                                }
-                                .font(.headline)
-                                .foregroundStyle(.green)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(.green.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                StatusBanner(icon: "checkmark.circle.fill", label: "You've joined this event", color: .green)
 
                                 Button {
                                     Task {
@@ -414,16 +346,7 @@ struct EventDetailView: View {
                             }
                         } else if event.isPendingPayment, viewModel.joinMessage == nil {
                             VStack(spacing: 10) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "creditcard.fill")
-                                    Text("Payment Required")
-                                }
-                                .font(.headline)
-                                .foregroundStyle(.blue)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(.blue.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                StatusBanner(icon: "creditcard.fill", label: "Payment Required", color: .blue)
 
                                 if let phone = event.organizerPhoneNumber, !phone.isEmpty {
                                     HStack(spacing: 8) {
@@ -480,16 +403,7 @@ struct EventDetailView: View {
                             }
                         } else if event.isPaymentSubmitted, viewModel.joinMessage == nil {
                             VStack(spacing: 10) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "creditcard.fill")
-                                    Text("Payment Required")
-                                }
-                                .font(.headline)
-                                .foregroundStyle(.blue)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(.blue.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                StatusBanner(icon: "creditcard.fill", label: "Payment Required", color: .blue)
 
                                 if let phone = event.organizerPhoneNumber, !phone.isEmpty {
                                     HStack(spacing: 8) {
@@ -537,16 +451,7 @@ struct EventDetailView: View {
                             }
                         } else if event.isPending, viewModel.joinMessage == nil {
                             VStack(spacing: 10) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "clock.fill")
-                                    Text("Waiting for approval")
-                                }
-                                .font(.headline)
-                                .foregroundStyle(.orange)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                                .background(.orange.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                StatusBanner(icon: "clock.fill", label: "Waiting for approval", color: .orange)
 
                                 Button {
                                     Task {
@@ -564,36 +469,17 @@ struct EventDetailView: View {
                                 }
                             }
                         } else if event.isFull {
-                            HStack(spacing: 8) {
-                                Image(systemName: "person.2.slash")
-                                Text("This event is full")
-                            }
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 52)
-                            .background(.gray.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            StatusBanner(icon: "person.2.slash", label: "This event is full", color: .gray)
                         } else if viewModel.joinMessage == nil {
-                            Button {
+                            GradientButton(
+                                label: "Request to Join  \(event.formattedPrice)",
+                                color: event.sportColor
+                            ) {
                                 Task {
                                     await viewModel.joinEvent(eventId: event.id, token: authService.token)
                                 }
-                            } label: {
-                                Text("Request to Join  \(event.formattedPrice)")
-                                    .font(.headline)
-                                    .foregroundStyle(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 52)
-                                    .background(
-                                        LinearGradient(
-                                            colors: [event.sportColor, event.sportColor.opacity(0.8)],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .clipShape(RoundedRectangle(cornerRadius: 14))
                             }
+                            .font(.headline)
                         }
                     }
                     .padding(16)

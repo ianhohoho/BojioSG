@@ -94,68 +94,20 @@ struct Event: Codable, Identifiable {
     }
 
     var sportColor: Color {
-        switch sportType.lowercased() {
-        case "pickleball": return .green
-        case "badminton": return .orange
-        case "tennis": return .blue
-        case "basketball": return .red
-        default: return .blue
-        }
+        SportConstants.color(for: sportType)
     }
 
     var sportIcon: String {
-        switch sportType.lowercased() {
-        case "pickleball": return "figure.pickleball"
-        case "badminton": return "figure.badminton"
-        case "tennis": return "figure.tennis"
-        case "basketball": return "figure.basketball"
-        default: return "sportscourt.fill"
-        }
+        SportConstants.icon(for: sportType)
     }
 
     var parsedDate: Date? {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = formatter.date(from: dateTime) { return date }
-        formatter.formatOptions = [.withInternetDateTime]
-        if let date = formatter.date(from: dateTime) { return date }
-        let stripped = dateTime.replacingOccurrences(of: "\\.\\d+$", with: "", options: .regularExpression)
-        return Self.naiveDateFormatter.date(from: stripped)
+        dateTime.parsedAsAPIDate()
     }
 
     var formattedDate: String {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = formatter.date(from: dateTime) {
-            return Self.displayFormatter.string(from: date)
-        }
-        // Try without fractional seconds
-        formatter.formatOptions = [.withInternetDateTime]
-        if let date = formatter.date(from: dateTime) {
-            return Self.displayFormatter.string(from: date)
-        }
-        // Try naive datetime (Python format without timezone, strip fractional seconds)
-        let stripped = dateTime.replacingOccurrences(of: "\\.\\d+$", with: "", options: .regularExpression)
-        if let date = Self.naiveDateFormatter.date(from: stripped) {
-            return Self.displayFormatter.string(from: date)
-        }
-        return dateTime
+        dateTime.formattedAsEventDate()
     }
-
-    private static let displayFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "d MMM yyyy, ha"
-        f.amSymbol = "am"
-        f.pmSymbol = "pm"
-        return f
-    }()
-
-    private static let naiveDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        f.locale = Locale(identifier: "en_US_POSIX")
-        return f
-    }()
 }
 
 struct EventCreate: Encodable {

@@ -41,29 +41,19 @@ struct RegisterView: View {
                         // Input fields
                         VStack(spacing: 16) {
                             VStack(spacing: 14) {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "person.fill")
-                                        .foregroundStyle(.secondary)
-                                        .frame(width: 20)
-                                    TextField("Username", text: $viewModel.username)
-                                        .textContentType(.username)
-                                        .autocorrectionDisabled()
-                                        .textInputAutocapitalization(.never)
-                                }
-                                .padding(14)
-                                .background(.ultraThinMaterial)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-
-                                HStack(spacing: 12) {
-                                    Image(systemName: "lock.fill")
-                                        .foregroundStyle(.secondary)
-                                        .frame(width: 20)
-                                    SecureField("Password (min 6 characters)", text: $viewModel.password)
-                                        .textContentType(.newPassword)
-                                }
-                                .padding(14)
-                                .background(.ultraThinMaterial)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                AuthInputField(
+                                    icon: "person.fill",
+                                    placeholder: "Username",
+                                    text: $viewModel.username,
+                                    contentType: .username
+                                )
+                                AuthInputField(
+                                    icon: "lock.fill",
+                                    placeholder: "Password (min 6 characters)",
+                                    text: $viewModel.password,
+                                    contentType: .newPassword,
+                                    isSecure: true
+                                )
                             }
 
                             if let error = viewModel.errorMessage {

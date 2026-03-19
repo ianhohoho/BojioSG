@@ -19,32 +19,6 @@ struct AppNotification: Codable, Identifiable {
     }
 
     var formattedDate: String {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = formatter.date(from: createdAt) {
-            return Self.displayFormatter.string(from: date)
-        }
-        formatter.formatOptions = [.withInternetDateTime]
-        if let date = formatter.date(from: createdAt) {
-            return Self.displayFormatter.string(from: date)
-        }
-        let stripped = createdAt.replacingOccurrences(of: "\\.\\d+$", with: "", options: .regularExpression)
-        if let date = Self.naiveDateFormatter.date(from: stripped) {
-            return Self.displayFormatter.string(from: date)
-        }
-        return createdAt
+        createdAt.formattedAsEventDate()
     }
-
-    private static let displayFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd hh:mm a"
-        return f
-    }()
-
-    private static let naiveDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        f.locale = Locale(identifier: "en_US_POSIX")
-        return f
-    }()
 }

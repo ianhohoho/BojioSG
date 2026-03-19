@@ -27,12 +27,22 @@ struct EventListView: View {
     @State private var timeFilter: TimeFilter = .all
     @State private var sortAscending = true
 
-    private static let sportTypes = [
-        ("Pickleball", "figure.pickleball", Color.green),
-        ("Badminton", "figure.badminton", Color.orange),
-        ("Tennis", "figure.tennis", Color.blue),
-        ("Basketball", "figure.basketball", Color.red),
+    private static let sportTypes: [(String, String, Color)] = [
+        ("Pickleball", "figure.pickleball", .green),
+        ("Badminton", "figure.badminton", .orange),
+        ("Tennis", "figure.tennis", .blue),
+        ("Basketball", "figure.basketball", .red),
     ]
+
+    private var selectedSportColor: Color {
+        guard let sport = selectedSport else { return .secondary }
+        return Self.sportTypes.first { $0.0 == sport }?.2 ?? .secondary
+    }
+
+    private var selectedSportIcon: String {
+        guard let sport = selectedSport else { return "sportscourt" }
+        return Self.sportTypes.first { $0.0 == sport }?.1 ?? "sportscourt"
+    }
 
     private var filteredEvents: [Event] {
         var events: [Event]
@@ -111,9 +121,10 @@ struct EventListView: View {
                     )
                 } else {
                     VStack(spacing: 0) {
-                        // Filter pills (pinned above scrollable content)
-                        VStack(spacing: 2) {
-                            HStack(spacing: 10) {
+                        // Filter rows
+                        VStack(spacing: 6) {
+                            // Row 1: Event filter pills
+                            HStack(spacing: 8) {
                                 ForEach(EventFilter.allCases, id: \.self) { option in
                                     Button {
                                         withAnimation(.easeInOut(duration: 0.2)) {
@@ -122,109 +133,120 @@ struct EventListView: View {
                                     } label: {
                                         Text(option.rawValue)
                                             .font(.subheadline)
-                                            .fontWeight(.semibold)
-                                            .padding(.horizontal, 16)
+                                            .fontWeight(.medium)
+                                            .frame(maxWidth: .infinity)
                                             .padding(.vertical, 8)
                                             .background(filter == option ? Color.accentColor : Color.gray.opacity(0.12))
                                             .foregroundStyle(filter == option ? .white : .primary)
                                             .clipShape(Capsule())
                                     }
                                 }
-                                Spacer()
                             }
                             .padding(.horizontal, 16)
-                            .padding(.top, 4)
 
-                            // Sport type filter
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
+                            // Row 2: Type menu + Time menu + Reset
+                            HStack(spacing: 8) {
+                                // Sport type menu
+                                Menu {
                                     Button {
                                         withAnimation(.easeInOut(duration: 0.2)) {
                                             selectedSport = nil
                                         }
                                     } label: {
-                                        HStack(spacing: 6) {
-                                            Image(systemName: "sportscourt")
-                                                .font(.caption)
+                                        if selectedSport == nil {
+                                            Label("All Types", systemImage: "checkmark")
+                                        } else {
                                             Text("All Types")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
                                         }
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(selectedSport == nil ? Color.accentColor.opacity(0.15) : Color.gray.opacity(0.08))
-                                        .foregroundStyle(selectedSport == nil ? Color.accentColor : .secondary)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule()
-                                                .strokeBorder(selectedSport == nil ? Color.accentColor.opacity(0.3) : .clear, lineWidth: 1)
-                                        )
                                     }
-
-                                    ForEach(Self.sportTypes, id: \.0) { name, icon, color in
-                                        let isSelected = selectedSport == name
+                                    ForEach(Self.sportTypes, id: \.0) { name, icon, _ in
                                         Button {
                                             withAnimation(.easeInOut(duration: 0.2)) {
-                                                selectedSport = isSelected ? nil : name
+                                                selectedSport = name
                                             }
                                         } label: {
-                                            HStack(spacing: 6) {
-                                                Image(systemName: icon)
-                                                    .font(.caption)
+                                            if selectedSport == name {
+                                                Label(name, systemImage: "checkmark")
+                                            } else {
                                                 Text(name)
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
                                             }
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 6)
-                                            .background(isSelected ? color.opacity(0.15) : Color.gray.opacity(0.08))
-                                            .foregroundStyle(isSelected ? color : .secondary)
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule()
-                                                    .strokeBorder(isSelected ? color.opacity(0.3) : .clear, lineWidth: 1)
-                                            )
                                         }
                                     }
+                                } label: {
+                                    let isActive = selectedSport != nil
+                                    HStack(spacing: 5) {
+                                        Image(systemName: selectedSportIcon)
+                                            .font(.caption)
+                                        Text(selectedSport ?? "Type")
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                        Image(systemName: "chevron.up.chevron.down")
+                                            .font(.system(size: 8, weight: .bold))
+                                    }
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 7)
+                                    .background(isActive ? selectedSportColor.opacity(0.15) : Color.gray.opacity(0.1))
+                                    .foregroundStyle(isActive ? selectedSportColor : .secondary)
+                                    .clipShape(Capsule())
                                 }
-                                .padding(.horizontal, 16)
-                            }
-                            .padding(.top, 2)
 
-                            // Time filter
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
+                                // Time filter menu
+                                Menu {
                                     ForEach(TimeFilter.allCases, id: \.self) { option in
-                                        let isSelected = timeFilter == option
                                         Button {
                                             withAnimation(.easeInOut(duration: 0.2)) {
                                                 timeFilter = option
                                             }
                                         } label: {
-                                            HStack(spacing: 6) {
-                                                Image(systemName: option == .all ? "clock" : "calendar")
-                                                    .font(.caption)
+                                            if timeFilter == option {
+                                                Label(option.rawValue, systemImage: "checkmark")
+                                            } else {
                                                 Text(option.rawValue)
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
                                             }
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 6)
-                                            .background(isSelected ? Color.purple.opacity(0.15) : Color.gray.opacity(0.08))
-                                            .foregroundStyle(isSelected ? .purple : .secondary)
-                                            .clipShape(Capsule())
-                                            .overlay(
-                                                Capsule()
-                                                    .strokeBorder(isSelected ? Color.purple.opacity(0.3) : .clear, lineWidth: 1)
-                                            )
                                         }
                                     }
+                                } label: {
+                                    let isActive = timeFilter != .all
+                                    HStack(spacing: 5) {
+                                        Image(systemName: isActive ? "calendar" : "clock")
+                                            .font(.caption)
+                                        Text(isActive ? timeFilter.rawValue : "Time")
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                        Image(systemName: "chevron.up.chevron.down")
+                                            .font(.system(size: 8, weight: .bold))
+                                    }
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 7)
+                                    .background(isActive ? Color.purple.opacity(0.15) : Color.gray.opacity(0.1))
+                                    .foregroundStyle(isActive ? .purple : .secondary)
+                                    .clipShape(Capsule())
                                 }
-                                .padding(.horizontal, 16)
-                            }
-                            .padding(.top, 2)
 
-                            // Sort order
+                                Spacer()
+
+                                // Reset button (only visible when filters are active)
+                                if selectedSport != nil || timeFilter != .all {
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            selectedSport = nil
+                                            timeFilter = .all
+                                        }
+                                    } label: {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "xmark")
+                                                .font(.system(size: 10, weight: .bold))
+                                            Text("Reset")
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                        }
+                                        .foregroundStyle(.red)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+
+                            // Row 3: Sort order
                             HStack {
                                 Spacer()
                                 Button {
@@ -244,8 +266,8 @@ struct EventListView: View {
                                 }
                             }
                             .padding(.horizontal, 16)
-                            .padding(.top, 8)
                         }
+                        .padding(.top, 4)
                         .padding(.bottom, 8)
 
                         List {

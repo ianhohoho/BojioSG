@@ -12,6 +12,8 @@
 		1E9E5E2B25B8362C4D5E4534 /* BojioSGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422353DFA0A5420D382D5A5E /* BojioSGApp.swift */; };
 		1E9EA34978BB4E37A33B10FC /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6D262203892327BF020D39 /* ProfileViewModel.swift */; };
 		231DB9B02F09FC0CCA9CF51F /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF056B372B300B403AB57CC1 /* EventViewModel.swift */; };
+		23911909C43508D5B8F98398 /* CardStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4073494AA54ADCABEE9B3CC /* CardStyle.swift */; };
+		2DC3C86ADA17579E5C4EA35A /* AuthInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3008D0DAEC9F025BD2BEE62B /* AuthInputField.swift */; };
 		317276381C83EF5E96D3151C /* StyledField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD374ADDBA6D4B7B05B5F5F /* StyledField.swift */; };
 		376CA51C7D0A64464D17C6C2 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A71DF0FE242B955664EF5E /* AuthService.swift */; };
 		3E5CE328B594C49B887838CD /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E21CE74BDA1461106145A7 /* Notification.swift */; };
@@ -20,23 +22,34 @@
 		6C286613D844B675D9E4C6DA /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2625C2709B6CB29E38EC979 /* EventDetailView.swift */; };
 		6E481E7E67AACA7101537634 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9012F191603EA7D1CD83B90B /* ProfileView.swift */; };
 		72744AA308C80BFD69708323 /* EventListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3D165ACB3CF5C2EAE5F7B8 /* EventListView.swift */; };
+		824AFFA7CBDDC9F705E6B2EA /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4537BACDE57DD0C68A6E0133 /* GradientButton.swift */; };
 		99492A4C4DBF5E4182FA80C6 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF8FCC90260C236254E676C /* AuthViewModel.swift */; };
+		997BAF746AB8AC04C850FFC5 /* AlertBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3711AABB3CAD0FAFAFEB4EC3 /* AlertBanner.swift */; };
 		9A7F8D59BECCF6F2F5119A14 /* CreateEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3146B49659EFC5FD6AAEC0 /* CreateEventView.swift */; };
+		9C6C946D7B00C9484AE04081 /* SportConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA290240D6EB94F060400EFB /* SportConstants.swift */; };
 		AB4C61DC79E04B4EF7466199 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7BBFDD8D01099E2B292615 /* LoginView.swift */; };
 		AB96A20F3A31CDA8898E44B8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77A31AABD18D9BE8A5509DA /* APIClient.swift */; };
 		B7B5999279D809699B4BF286 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5234A9C0E773CEEE091B449 /* User.swift */; };
 		B95E389B6B1BC33809B21080 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7B7EF55F6FEE68185485EA /* RegisterView.swift */; };
 		C343FB8D9D7B6C2D2AC4D765 /* EventRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF195EA7DA6834C6A470193 /* EventRowView.swift */; };
+		C62796A2E6074664556A81D2 /* AppIcon.svg in Resources */ = {isa = PBXBuildFile; fileRef = B01540F63163524B1A7D2FDF /* AppIcon.svg */; };
 		CA720B2795D0970404AF4068 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7668D7B0296776C361F7E04F /* ContentView.swift */; };
+		CF8F6B58166A7FFB4C784E0D /* StatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08788B8CDD71ECBE96FCA0C /* StatusPill.swift */; };
+		D20D5064C432F5FB578F0EA1 /* StatusBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B93D895FF6CD61ADC28152D /* StatusBanner.swift */; };
 		D5DC5F767E1F2A0E0E9D938D /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A440931817C997FD871A1C /* FlowLayout.swift */; };
+		D8850DD21740AF4D50B21C5E /* DateParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10936C71758B61CBE544AEA /* DateParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0FD374ADDBA6D4B7B05B5F5F /* StyledField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledField.swift; sourceTree = "<group>"; };
+		1B93D895FF6CD61ADC28152D /* StatusBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBanner.swift; sourceTree = "<group>"; };
 		28E21CE74BDA1461106145A7 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		3008D0DAEC9F025BD2BEE62B /* AuthInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthInputField.swift; sourceTree = "<group>"; };
 		336A2924245BED77E797CF22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3711AABB3CAD0FAFAFEB4EC3 /* AlertBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertBanner.swift; sourceTree = "<group>"; };
 		3F7B7EF55F6FEE68185485EA /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		422353DFA0A5420D382D5A5E /* BojioSGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojioSGApp.swift; sourceTree = "<group>"; };
+		4537BACDE57DD0C68A6E0133 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
 		58853872827BB3C62BFBC20C /* BojioSG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BojioSG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AF38FBA2547C4313CD549F1 /* InboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxView.swift; sourceTree = "<group>"; };
 		5B3D165ACB3CF5C2EAE5F7B8 /* EventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListView.swift; sourceTree = "<group>"; };
@@ -49,12 +62,17 @@
 		9012F191603EA7D1CD83B90B /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		9FF195EA7DA6834C6A470193 /* EventRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRowView.swift; sourceTree = "<group>"; };
 		A2DABCE4158A8A04A148E66C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B01540F63163524B1A7D2FDF /* AppIcon.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = AppIcon.svg; sourceTree = "<group>"; };
 		B5234A9C0E773CEEE091B449 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C08788B8CDD71ECBE96FCA0C /* StatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusPill.swift; sourceTree = "<group>"; };
+		C4073494AA54ADCABEE9B3CC /* CardStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStyle.swift; sourceTree = "<group>"; };
 		CBF8FCC90260C236254E676C /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		D2625C2709B6CB29E38EC979 /* EventDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailView.swift; sourceTree = "<group>"; };
+		DA290240D6EB94F060400EFB /* SportConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportConstants.swift; sourceTree = "<group>"; };
 		DCD5C1B67CA888ED117790FE /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		E2A71DF0FE242B955664EF5E /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		E77A31AABD18D9BE8A5509DA /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		F10936C71758B61CBE544AEA /* DateParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateParser.swift; sourceTree = "<group>"; };
 		FF056B372B300B403AB57CC1 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,6 +93,7 @@
 				72A440931817C997FD871A1C /* FlowLayout.swift */,
 				0FD374ADDBA6D4B7B05B5F5F /* StyledField.swift */,
 				DDBA24F03276770AEBF6BA49 /* Auth */,
+				DF4362CDBA7A9B0C5120D8B2 /* Components */,
 				852F15D41405421078C359B8 /* Events */,
 				F5E2E418CAF97A0BAFB6AAC6 /* Inbox */,
 				E7F940A22F376074D759AB12 /* Profile */,
@@ -93,8 +112,10 @@
 		7E92F0EC4AB855F0099EEE06 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F10936C71758B61CBE544AEA /* DateParser.swift */,
 				8B1DC4F171335ECFECCB0C77 /* Event.swift */,
 				28E21CE74BDA1461106145A7 /* Notification.swift */,
+				DA290240D6EB94F060400EFB /* SportConstants.swift */,
 				B5234A9C0E773CEEE091B449 /* User.swift */,
 			);
 			path = Models;
@@ -150,9 +171,23 @@
 			path = Auth;
 			sourceTree = "<group>";
 		};
+		DF4362CDBA7A9B0C5120D8B2 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				3711AABB3CAD0FAFAFEB4EC3 /* AlertBanner.swift */,
+				3008D0DAEC9F025BD2BEE62B /* AuthInputField.swift */,
+				C4073494AA54ADCABEE9B3CC /* CardStyle.swift */,
+				4537BACDE57DD0C68A6E0133 /* GradientButton.swift */,
+				1B93D895FF6CD61ADC28152D /* StatusBanner.swift */,
+				C08788B8CDD71ECBE96FCA0C /* StatusPill.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		E6699F2BBD8351C0506E4653 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B01540F63163524B1A7D2FDF /* AppIcon.svg */,
 				A2DABCE4158A8A04A148E66C /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -239,6 +274,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C62796A2E6074664556A81D2 /* AppIcon.svg in Resources */,
 				06A4231DD752523E72C88A49 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -251,17 +287,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB96A20F3A31CDA8898E44B8 /* APIClient.swift in Sources */,
+				997BAF746AB8AC04C850FFC5 /* AlertBanner.swift in Sources */,
+				2DC3C86ADA17579E5C4EA35A /* AuthInputField.swift in Sources */,
 				376CA51C7D0A64464D17C6C2 /* AuthService.swift in Sources */,
 				99492A4C4DBF5E4182FA80C6 /* AuthViewModel.swift in Sources */,
 				1E9E5E2B25B8362C4D5E4534 /* BojioSGApp.swift in Sources */,
+				23911909C43508D5B8F98398 /* CardStyle.swift in Sources */,
 				CA720B2795D0970404AF4068 /* ContentView.swift in Sources */,
 				9A7F8D59BECCF6F2F5119A14 /* CreateEventView.swift in Sources */,
+				D8850DD21740AF4D50B21C5E /* DateParser.swift in Sources */,
 				45DCDE7CD140C96F2324282A /* Event.swift in Sources */,
 				6C286613D844B675D9E4C6DA /* EventDetailView.swift in Sources */,
 				72744AA308C80BFD69708323 /* EventListView.swift in Sources */,
 				C343FB8D9D7B6C2D2AC4D765 /* EventRowView.swift in Sources */,
 				231DB9B02F09FC0CCA9CF51F /* EventViewModel.swift in Sources */,
 				D5DC5F767E1F2A0E0E9D938D /* FlowLayout.swift in Sources */,
+				824AFFA7CBDDC9F705E6B2EA /* GradientButton.swift in Sources */,
 				469D500CA92091D7348B408F /* InboxView.swift in Sources */,
 				AB4C61DC79E04B4EF7466199 /* LoginView.swift in Sources */,
 				3E5CE328B594C49B887838CD /* Notification.swift in Sources */,
@@ -269,6 +310,9 @@
 				6E481E7E67AACA7101537634 /* ProfileView.swift in Sources */,
 				1E9EA34978BB4E37A33B10FC /* ProfileViewModel.swift in Sources */,
 				B95E389B6B1BC33809B21080 /* RegisterView.swift in Sources */,
+				9C6C946D7B00C9484AE04081 /* SportConstants.swift in Sources */,
+				D20D5064C432F5FB578F0EA1 /* StatusBanner.swift in Sources */,
+				CF8F6B58166A7FFB4C784E0D /* StatusPill.swift in Sources */,
 				317276381C83EF5E96D3151C /* StyledField.swift in Sources */,
 				B7B5999279D809699B4BF286 /* User.swift in Sources */,
 			);

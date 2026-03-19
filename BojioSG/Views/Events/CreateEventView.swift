@@ -123,44 +123,16 @@ struct CreateEventView: View {
 
                     // Error message
                     if let error = viewModel.errorMessage {
-                        HStack(spacing: 8) {
-                            Image(systemName: "exclamationmark.circle.fill")
-                            Text(error)
-                        }
-                        .font(.subheadline)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity)
-                        .padding(14)
-                        .background(.red.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        AlertBanner(message: error, style: .error)
                     }
 
                     // Create button
-                    Button {
+                    GradientButton(
+                        label: "Create Event",
+                        isLoading: isSubmitting,
+                        color: isFormValid ? sportColor : .gray
+                    ) {
                         Task { await submit() }
-                    } label: {
-                        Group {
-                            if isSubmitting {
-                                ProgressView()
-                                    .tint(.white)
-                            } else {
-                                Text("Create Event")
-                                    .fontWeight(.semibold)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .foregroundStyle(.white)
-                        .background(
-                            LinearGradient(
-                                colors: isFormValid
-                                    ? [sportColor, sportColor.opacity(0.8)]
-                                    : [.gray, .gray.opacity(0.8)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                     .disabled(!isFormValid || isSubmitting)
                 }
@@ -180,24 +152,12 @@ struct CreateEventView: View {
     // MARK: - Helpers
 
     private var sportColor: Color {
-        switch sportType {
-        case "pickleball": return .green
-        case "badminton": return .orange
-        case "tennis": return .blue
-        case "basketball": return .red
-        default: return .blue
-        }
+        SportConstants.color(for: sportType)
     }
 
     private func sportButton(_ sport: String) -> some View {
         let isSelected = sportType == sport
-        let color: Color = switch sport {
-        case "pickleball": .green
-        case "badminton": .orange
-        case "tennis": .blue
-        case "basketball": .red
-        default: .blue
-        }
+        let color = SportConstants.color(for: sport)
 
         return Button {
             sportType = sport
@@ -247,20 +207,5 @@ struct CreateEventView: View {
         if success {
             dismiss()
         }
-    }
-}
-
-// MARK: - Card Style Modifier
-
-private extension View {
-    func cardStyle() -> some View {
-        self
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.background)
-                    .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-            )
     }
 }

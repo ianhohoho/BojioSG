@@ -45,12 +45,8 @@ struct ProfileView: View {
                                 .keyboardType(.phonePad)
                         }
                     }
-                    .padding(20)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(.background)
-                            .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
-                    )
+                    .padding(.horizontal, 4)
+                    .cardStyle()
                     .padding(.horizontal, 16)
 
                     if let error = viewModel.errorMessage {
@@ -60,33 +56,15 @@ struct ProfileView: View {
                     }
 
                     // Save button
-                    Button {
+                    GradientButton(
+                        label: viewModel.saveSuccess ? "Saved!" : "Save Changes",
+                        isLoading: viewModel.isSaving
+                    ) {
                         Task {
                             if let profile = await viewModel.updateProfile(token: authService.token) {
                                 authService.updateNickname(profile.nickname)
                             }
                         }
-                    } label: {
-                        Group {
-                            if viewModel.isSaving {
-                                ProgressView()
-                                    .tint(.white)
-                            } else {
-                                Text(viewModel.saveSuccess ? "Saved!" : "Save Changes")
-                                    .fontWeight(.semibold)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.accentColor, Color.accentColor.opacity(0.8)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
                     .disabled(viewModel.isSaving)
                     .padding(.horizontal, 16)
