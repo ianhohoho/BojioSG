@@ -6,6 +6,13 @@ enum EventFilter: String, CaseIterable {
     case joined = "Joined"
 }
 
+enum TimeFilter: String, CaseIterable {
+    case all = "Any Time"
+    case nextDay = "24 Hours"
+    case nextWeek = "This Week"
+    case nextMonth = "This Month"
+}
+
 struct EventListView: View {
     @Environment(AuthService.self) private var authService
     @State private var viewModel = EventViewModel()
@@ -17,6 +24,7 @@ struct EventListView: View {
     @State private var pendingEventNavigation: Int?
     @State private var filter: EventFilter = .all
     @State private var selectedSport: String?
+    @State private var timeFilter: TimeFilter = .all
 
     private static let sportTypes = [
         ("Pickleball", "figure.pickleball", Color.green),
@@ -37,6 +45,19 @@ struct EventListView: View {
         }
         if let sport = selectedSport {
             events = events.filter { $0.sportType.lowercased() == sport.lowercased() }
+        }
+        if timeFilter != .all {
+            let now = Date()
+            let cutoff: Date = switch timeFilter {
+            case .nextDay: Calendar.current.date(byAdding: .day, value: 1, to: now)!
+            case .nextWeek: Calendar.current.date(byAdding: .day, value: 7, to: now)!
+            case .nextMonth: Calendar.current.date(byAdding: .month, value: 1, to: now)!
+            case .all: now
+            }
+            events = events.filter { event in
+                guard let date = event.parsedDate else { return true }
+                return date >= now && date <= cutoff
+            }
         }
         return events
     }
@@ -132,6 +153,39 @@ struct EventListView: View {
                                         .overlay(
                                             Capsule()
                                                 .strokeBorder(isSelected ? color.opacity(0.3) : .clear, lineWidth: 1)
+                                        )
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                        }
+                        .padding(.top, 2)
+
+                        // Time filter
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(TimeFilter.allCases, id: \.self) { option in
+                                    let isSelected = timeFilter == option
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            timeFilter = option
+                                        }
+                                    } label: {
+                                        HStack(spacing: 6) {
+                                            Image(systemName: option == .all ? "clock" : "calendar")
+                                                .font(.caption)
+                                            Text(option.rawValue)
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                        }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(isSelected ? Color.purple.opacity(0.15) : Color.gray.opacity(0.08))
+                                        .foregroundStyle(isSelected ? .purple : .secondary)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .strokeBorder(isSelected ? Color.purple.opacity(0.3) : .clear, lineWidth: 1)
                                         )
                                     }
                                 }

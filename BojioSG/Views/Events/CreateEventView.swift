@@ -9,7 +9,12 @@ struct CreateEventView: View {
     @State private var description = ""
     @State private var sportType = "pickleball"
     @State private var location = ""
-    @State private var dateTime = Date.now.addingTimeInterval(3600)
+    @State private var dateTime: Date = {
+        var comps = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        comps.hour = 12
+        comps.minute = 0
+        return Calendar.current.date(from: comps) ?? .now
+    }()
     @State private var priceText = ""
     @State private var maxParticipants = 8
     @State private var isSubmitting = false

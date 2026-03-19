@@ -97,6 +97,16 @@ struct Event: Codable, Identifiable {
         }
     }
 
+    var parsedDate: Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: dateTime) { return date }
+        formatter.formatOptions = [.withInternetDateTime]
+        if let date = formatter.date(from: dateTime) { return date }
+        let stripped = dateTime.replacingOccurrences(of: "\\.\\d+$", with: "", options: .regularExpression)
+        return Self.naiveDateFormatter.date(from: stripped)
+    }
+
     var formattedDate: String {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

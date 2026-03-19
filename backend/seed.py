@@ -39,13 +39,43 @@ diana = get_or_create_user("diana", "diana", nickname="Diana", phone_number="855
 
 # Sample events
 now = datetime.now(timezone.utc)
+
+
+def at(days: int, hour: int, minute: int = 0) -> datetime:
+    """Return a future datetime with a clean hour:minute."""
+    base = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    return base + timedelta(days=days)
+
+
 sample_events = [
+    # --- Within 24 hours ---
+    {
+        "title": "Evening Pickleball Quickplay",
+        "description": "Last-minute pickleball session tonight! Casual play, all levels. Paddles available to borrow.",
+        "sport_type": "pickleball",
+        "location": "Queenstown CC, Courts 1-2",
+        "date_time": at(0, 20, 0),
+        "price": 6.00,
+        "max_participants": 8,
+        "organizer": admin,
+    },
+    {
+        "title": "Morning Badminton Warmup",
+        "description": "Early bird badminton session. Perfect way to start your day. Shuttlecocks provided.",
+        "sport_type": "badminton",
+        "location": "Toa Payoh Sports Centre, Court 2",
+        "date_time": at(1, 7, 30),
+        "price": 5.00,
+        "max_participants": 4,
+        "organizer": alice,
+    },
+    # --- Within 1 week (2-6 days) ---
     {
         "title": "Weekend Pickleball Doubles",
         "description": "Casual doubles pickleball session for all skill levels. Paddles and balls provided. Come make new friends and enjoy the game!",
         "sport_type": "pickleball",
-        "location": "Queenstown CC, Courts 1-2",
-        "date_time": now + timedelta(days=3, hours=9),
+        "location": "Bishan ActiveSG, Courts 3-4",
+        "date_time": at(2, 9, 0),
         "price": 8.00,
         "max_participants": 8,
         "organizer": admin,
@@ -55,80 +85,92 @@ sample_events = [
         "description": "Singles badminton session for intermediate to advanced players. Bring your own racket. Shuttlecocks provided.",
         "sport_type": "badminton",
         "location": "Clementi Sports Hall, Court 5",
-        "date_time": now + timedelta(days=5, hours=19),
+        "date_time": at(3, 19, 30),
         "price": 12.00,
         "max_participants": 6,
         "organizer": admin,
-    },
-    {
-        "title": "Beginner Pickleball Workshop",
-        "description": "New to pickleball? Join this beginner-friendly workshop! Learn the basics, rules, and strategies. All equipment provided.",
-        "sport_type": "pickleball",
-        "location": "Bishan ActiveSG, Courts 3-4",
-        "date_time": now + timedelta(days=7, hours=10),
-        "price": 15.00,
-        "max_participants": 12,
-        "organizer": admin,
-    },
-    {
-        "title": "Friday Night Badminton",
-        "description": "End your week with some badminton! Mixed doubles format. All levels welcome. Light refreshments included.",
-        "sport_type": "badminton",
-        "location": "Tampines Hub, Badminton Hall",
-        "date_time": now + timedelta(days=4, hours=20),
-        "price": 10.00,
-        "max_participants": 8,
-        "organizer": admin,
-    },
-    {
-        "title": "Pickleball Tournament - Round Robin",
-        "description": "Mini round-robin tournament! Teams will be drawn randomly. Prizes for top 3 teams. Registration includes lunch.",
-        "sport_type": "pickleball",
-        "location": "Kallang ActiveSG, Courts 1-4",
-        "date_time": now + timedelta(days=10, hours=8),
-        "price": 25.00,
-        "max_participants": 16,
-        "organizer": admin,
-    },
-    {
-        "title": "Lunchtime Badminton Session",
-        "description": "Quick lunchtime badminton session for working professionals. 1.5 hours of play. Shower facilities available.",
-        "sport_type": "badminton",
-        "location": "Toa Payoh Sports Centre, Court 2",
-        "date_time": now + timedelta(days=2, hours=12),
-        "price": 6.00,
-        "max_participants": 4,
-        "organizer": admin,
-    },
-    {
-        "title": "Sunday Tennis Social",
-        "description": "Relaxed tennis session for all levels. We rotate partners every set. Balls provided. Great way to meet fellow tennis enthusiasts!",
-        "sport_type": "tennis",
-        "location": "Bukit Timah Tennis Centre, Courts 3-4",
-        "date_time": now + timedelta(days=6, hours=8),
-        "price": 14.00,
-        "max_participants": 8,
-        "organizer": alice,
     },
     {
         "title": "3v3 Basketball Pickup",
         "description": "Half-court 3v3 basketball. Intermediate level. Teams formed on the spot. Bring your own water bottle!",
         "sport_type": "basketball",
         "location": "Jurong East ActiveSG, Outdoor Court",
-        "date_time": now + timedelta(days=4, hours=17),
+        "date_time": at(4, 17, 0),
         "price": 5.00,
         "max_participants": 12,
         "organizer": bob,
+    },
+    {
+        "title": "Friday Night Badminton",
+        "description": "End your week with some badminton! Mixed doubles format. All levels welcome. Light refreshments included.",
+        "sport_type": "badminton",
+        "location": "Tampines Hub, Badminton Hall",
+        "date_time": at(5, 20, 30),
+        "price": 10.00,
+        "max_participants": 8,
+        "organizer": admin,
     },
     {
         "title": "Weeknight Tennis Drills",
         "description": "Structured drill session focusing on serves and volleys. Coach-led warmup included. Intermediate to advanced players.",
         "sport_type": "tennis",
         "location": "Kallang Tennis Centre, Court 1",
-        "date_time": now + timedelta(days=3, hours=19),
+        "date_time": at(6, 19, 0),
         "price": 18.00,
         "max_participants": 6,
         "organizer": alice,
+    },
+    # --- Within 1 month (8-25 days) ---
+    {
+        "title": "Sunday Tennis Social",
+        "description": "Relaxed tennis session for all levels. We rotate partners every set. Balls provided. Great way to meet fellow tennis enthusiasts!",
+        "sport_type": "tennis",
+        "location": "Bukit Timah Tennis Centre, Courts 3-4",
+        "date_time": at(10, 8, 30),
+        "price": 14.00,
+        "max_participants": 8,
+        "organizer": alice,
+    },
+    {
+        "title": "Beginner Pickleball Workshop",
+        "description": "New to pickleball? Join this beginner-friendly workshop! Learn the basics, rules, and strategies. All equipment provided.",
+        "sport_type": "pickleball",
+        "location": "Bishan ActiveSG, Courts 3-4",
+        "date_time": at(14, 10, 0),
+        "price": 15.00,
+        "max_participants": 12,
+        "organizer": admin,
+    },
+    {
+        "title": "Basketball Skills Clinic",
+        "description": "Coached session covering shooting form, ball handling, and defensive footwork. All skill levels welcome.",
+        "sport_type": "basketball",
+        "location": "Hougang ActiveSG, Indoor Court",
+        "date_time": at(20, 14, 30),
+        "price": 12.00,
+        "max_participants": 10,
+        "organizer": charlie,
+    },
+    # --- Beyond 1 month ---
+    {
+        "title": "Pickleball Tournament - Round Robin",
+        "description": "Mini round-robin tournament! Teams will be drawn randomly. Prizes for top 3 teams. Registration includes lunch.",
+        "sport_type": "pickleball",
+        "location": "Kallang ActiveSG, Courts 1-4",
+        "date_time": at(35, 8, 0),
+        "price": 25.00,
+        "max_participants": 16,
+        "organizer": admin,
+    },
+    {
+        "title": "Badminton Inter-Club Friendly",
+        "description": "Friendly match between local clubs. Mixed doubles and singles formats. Post-match dinner included!",
+        "sport_type": "badminton",
+        "location": "OCBC Arena, Hall 3",
+        "date_time": at(45, 13, 30),
+        "price": 20.00,
+        "max_participants": 16,
+        "organizer": bob,
     },
 ]
 
@@ -154,15 +196,18 @@ print(f"Seeded {created_count} events (skipped {len(sample_events) - created_cou
 
 # Seed participants
 participant_assignments = [
+    ("Evening Pickleball Quickplay", [admin, alice, bob]),
+    ("Morning Badminton Warmup", [alice, diana]),
     ("Weekend Pickleball Doubles", [admin, alice, bob, charlie]),
     ("Competitive Badminton Singles", [admin, alice, diana]),
-    ("Friday Night Badminton", [admin, bob, charlie, diana]),
-    ("Beginner Pickleball Workshop", [admin, bob, diana]),
-    ("Pickleball Tournament - Round Robin", [admin]),
-    ("Lunchtime Badminton Session", [admin]),
-    ("Sunday Tennis Social", [alice, admin, bob, charlie, diana]),
     ("3v3 Basketball Pickup", [bob, alice, charlie, diana]),
+    ("Friday Night Badminton", [admin, bob, charlie, diana]),
     ("Weeknight Tennis Drills", [alice, bob, charlie]),
+    ("Sunday Tennis Social", [alice, admin, bob, charlie, diana]),
+    ("Beginner Pickleball Workshop", [admin, bob, diana]),
+    ("Basketball Skills Clinic", [charlie, alice, bob]),
+    ("Pickleball Tournament - Round Robin", [admin]),
+    ("Badminton Inter-Club Friendly", [bob, alice]),
 ]
 
 participant_count = 0
