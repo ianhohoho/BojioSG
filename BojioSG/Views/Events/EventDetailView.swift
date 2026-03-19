@@ -367,7 +367,7 @@ struct EventDetailView: View {
                             .frame(height: 52)
                             .background(.gray.opacity(0.12))
                             .clipShape(RoundedRectangle(cornerRadius: 14))
-                        } else {
+                        } else if viewModel.joinMessage == nil {
                             Button {
                                 Task {
                                     await viewModel.joinEvent(eventId: event.id, token: authService.token)

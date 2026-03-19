@@ -1,5 +1,6 @@
 """Tests for notification endpoints."""
 
+from models import EventParticipant
 from tests.conftest import auth_header, login
 
 
@@ -56,6 +57,34 @@ def test_empty_notifications_list(client, seed_users):
     r = client.get("/notifications", headers=auth_header(token))
     assert r.status_code == 200
     assert r.json() == []
+
+
+def test_approve_creates_notification(client, seed_events, seed_users, db_session):
+    """Approving a participant creates a notification."""
+    event = seed_events["Pickleball Doubles"]
+    diana = seed_users["diana"]
+
+    # Add diana as pending
+    p = EventParticipant(event_id=event.id, user_id=diana.id, status="pending")
+    db_session.add(p)
+    db_session.commit()
+
+    admin_token = login(client, "admin")
+    r = client.put(
+        f"/events/{event.id}/participants/{diana.id}/approve",
+        headers=auth_header(admin_token),
+    )
+    assert r.status_code == 200
+
+    diana_token = login(client, "diana")
+    r = client.get("/notifications", headers=auth_header(diana_token))
+    assert r.status_code == 200
+    notifications = r.json()
+    assert len(notifications) == 1
+    n = notifications[0]
+    assert n["type"] == "approved"
+    assert n["event_title"] == "Pickleball Doubles"
+    assert n["is_read"] is False
 
 
 def test_notifications_unauthenticated(client):

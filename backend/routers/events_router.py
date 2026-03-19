@@ -248,6 +248,13 @@ def approve_participant(
         )
 
     participation.status = "approved"
+    notification = Notification(
+        user_id=user_id,
+        event_id=event_id,
+        type="approved",
+        message=f"You've been approved for '{event.title}'",
+    )
+    db.add(notification)
     db.commit()
 
     return ParticipantActionResponse(message="Participant approved")
