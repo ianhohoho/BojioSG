@@ -107,6 +107,7 @@ struct EventDetailView: View {
                         // Participants list (organizer only)
                         if event.isOrganizer == true, let participants = event.participants {
                             let pending = participants.filter { $0.status == "pending" }
+                            let awaitingPayment = participants.filter { $0.status == "pending_payment" || $0.status == "payment_submitted" }
                             let approved = participants.filter { $0.status == "approved" }
 
                             // Pending requests
@@ -181,10 +182,90 @@ struct EventDetailView: View {
                                 )
                             }
 
-                            // Approved participants
+                            // Awaiting payment
+                            if !awaitingPayment.isEmpty {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    HStack {
+                                        Text("Awaiting Payment")
+                                            .font(.headline)
+                                        Spacer()
+                                        Text("\(awaitingPayment.count)")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundStyle(.blue)
+                                    }
+
+                                    ForEach(awaitingPayment) { participant in
+                                        HStack(spacing: 12) {
+                                            Image(systemName: "person.circle.fill")
+                                                .font(.title3)
+                                                .foregroundStyle(.blue)
+
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                HStack(spacing: 6) {
+                                                    Text(participant.username)
+                                                        .font(.subheadline)
+                                                        .fontWeight(.medium)
+                                                    if participant.status == "payment_submitted" {
+                                                        Text("Paid")
+                                                            .font(.caption2)
+                                                            .fontWeight(.bold)
+                                                            .foregroundStyle(.white)
+                                                            .padding(.horizontal, 6)
+                                                            .padding(.vertical, 2)
+                                                            .background(.green)
+                                                            .clipShape(Capsule())
+                                                    }
+                                                }
+                                                if let phone = participant.phoneNumber {
+                                                    Text(phone)
+                                                        .font(.caption)
+                                                        .foregroundStyle(.secondary)
+                                                }
+                                            }
+
+                                            Spacer()
+
+                                            Button {
+                                                Task {
+                                                    await viewModel.confirmPayment(
+                                                        eventId: event.id,
+                                                        userId: participant.id,
+                                                        token: authService.token
+                                                    )
+                                                }
+                                            } label: {
+                                                Image(systemName: "dollarsign.circle.fill")
+                                                    .font(.title2)
+                                                    .foregroundStyle(.green)
+                                            }
+
+                                            Button {
+                                                removeTargetParticipant = participant
+                                                removeReason = ""
+                                                showRemoveConfirmation = true
+                                            } label: {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .font(.title2)
+                                                    .foregroundStyle(.red)
+                                            }
+                                        }
+                                        .padding(.vertical, 4)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(16)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .fill(.background)
+                                        .shadow(color: .black.opacity(0.06), radius: 8, y: 4)
+                                )
+                            }
+
+                            // Confirmed participants
                             VStack(alignment: .leading, spacing: 12) {
                                 HStack {
-                                    Text("Participants")
+                                    Text("Confirmed")
                                         .font(.headline)
                                     Spacer()
                                     Button {
@@ -204,7 +285,7 @@ struct EventDetailView: View {
                                 }
 
                                 if approved.isEmpty {
-                                    Text("No approved participants yet")
+                                    Text("No confirmed participants yet")
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                 } else {
@@ -255,36 +336,17 @@ struct EventDetailView: View {
 
                         // Status messages
                         if event.isOrganizer != true, let joinMessage = viewModel.joinMessage {
-                            VStack(spacing: 10) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                    Text(joinMessage)
-                                }
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.green)
-                                .frame(maxWidth: .infinity)
-                                .padding(14)
-                                .background(.green.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-
-                                if let phone = event.organizerPhoneNumber, !phone.isEmpty {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text("Pay \(event.formattedPrice) via PayNow")
-                                                .fontWeight(.semibold)
-                                            Text("Send to \(phone) (\(event.organizerUsername))")
-                                        }
-                                    }
-                                    .font(.subheadline)
-                                    .foregroundStyle(.blue)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(14)
-                                    .background(.blue.opacity(0.08))
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                }
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill")
+                                Text(joinMessage)
                             }
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.green)
+                            .frame(maxWidth: .infinity)
+                            .padding(14)
+                            .background(.green.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
 
@@ -326,6 +388,129 @@ struct EventDetailView: View {
                                 .frame(height: 52)
                                 .background(.green.opacity(0.1))
                                 .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                                Button {
+                                    Task {
+                                        await viewModel.leaveEvent(eventId: event.id, token: authService.token)
+                                    }
+                                } label: {
+                                    Text("Withdraw")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.red)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 44)
+                                        .background(.red.opacity(0.1))
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+                            }
+                        } else if event.isPendingPayment, viewModel.joinMessage == nil {
+                            VStack(spacing: 10) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "creditcard.fill")
+                                    Text("Payment Required")
+                                }
+                                .font(.headline)
+                                .foregroundStyle(.blue)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
+                                .background(.blue.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                                if let phone = event.organizerPhoneNumber, !phone.isEmpty {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Pay \(event.formattedPrice) via PayNow")
+                                                .fontWeight(.semibold)
+                                            Text("Send to \(phone) (\(event.organizerUsername))")
+                                        }
+                                    }
+                                    .font(.subheadline)
+                                    .foregroundStyle(.blue)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(14)
+                                    .background(.blue.opacity(0.08))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+
+                                Button {
+                                    Task {
+                                        await viewModel.notifyPayment(eventId: event.id, token: authService.token)
+                                    }
+                                } label: {
+                                    Text("Let Organiser Know Payment Made")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 48)
+                                        .background(
+                                            LinearGradient(
+                                                colors: [.blue, .blue.opacity(0.8)],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+
+                                Button {
+                                    Task {
+                                        await viewModel.leaveEvent(eventId: event.id, token: authService.token)
+                                    }
+                                } label: {
+                                    Text("Withdraw")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .foregroundStyle(.red)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 44)
+                                        .background(.red.opacity(0.1))
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+                            }
+                        } else if event.isPaymentSubmitted, viewModel.joinMessage == nil {
+                            VStack(spacing: 10) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "creditcard.fill")
+                                    Text("Payment Required")
+                                }
+                                .font(.headline)
+                                .foregroundStyle(.blue)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
+                                .background(.blue.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                                if let phone = event.organizerPhoneNumber, !phone.isEmpty {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Pay \(event.formattedPrice) via PayNow")
+                                                .fontWeight(.semibold)
+                                            Text("Send to \(phone) (\(event.organizerUsername))")
+                                        }
+                                    }
+                                    .font(.subheadline)
+                                    .foregroundStyle(.blue)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(14)
+                                    .background(.blue.opacity(0.08))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                    Text("Organiser has been notified")
+                                }
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.teal)
+                                .frame(maxWidth: .infinity)
+                                .padding(14)
+                                .background(.teal.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
 
                                 Button {
                                     Task {

@@ -76,7 +76,9 @@ xcodegen generate
 - `GET /events/{id}` — event detail
 - `POST /events` — create event (auth required)
 - `POST /events/{id}/join` — request to join (creates pending, auth required)
-- `PUT /events/{id}/participants/{user_id}/approve` — organizer approves (auth required)
+- `PUT /events/{id}/participants/{user_id}/approve` — organizer approves → pending_payment (auth required)
+- `PUT /events/{id}/notify-payment` — user notifies organizer of payment → payment_submitted (auth required)
+- `PUT /events/{id}/participants/{user_id}/confirm-payment` — organizer confirms payment → approved (auth required)
 - `DELETE /events/{id}/participants/{user_id}` — organizer removes participant (auth required)
 - `DELETE /events/{id}/leave` — user withdraws from event (auth required)
 - `GET /notifications` — list user's notifications (auth required)

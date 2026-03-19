@@ -154,8 +154,8 @@ class TestJoinEvent:
 
 
 class TestApproveParticipant:
-    def test_organizer_approves(self, client, seed_users, seed_events):
-        # Diana joins (pending), then admin approves
+    def test_organizer_approves_sets_pending_payment(self, client, seed_users, seed_events):
+        # Diana joins (pending), then admin approves → pending_payment
         diana_token = login(client, "diana")
         event_id = seed_events["Pickleball Doubles"].id
         client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
@@ -169,11 +169,12 @@ class TestApproveParticipant:
         assert r.status_code == 200
         assert "approved" in r.json()["message"].lower()
 
-        # Verify diana is now approved
+        # Verify diana is now pending_payment (NOT approved)
         events = client.get("/events", headers=auth_header(diana_token)).json()
         pickleball = next(e for e in events if e["title"] == "Pickleball Doubles")
-        assert pickleball["join_status"] == "approved"
-        assert pickleball["current_participants"] == 4
+        assert pickleball["join_status"] == "pending_payment"
+        # pending_payment should NOT count toward current_participants
+        assert pickleball["current_participants"] == 3
 
     def test_non_organizer_cannot_approve(self, client, seed_users, seed_events):
         # Diana joins, then alice (non-organizer) tries to approve
@@ -200,8 +201,95 @@ class TestApproveParticipant:
         assert r.status_code == 400
         assert "already approved" in r.json()["detail"].lower()
 
-    def test_approve_full_event_fails(self, client, seed_users, seed_events):
-        """When event is at capacity, approving another pending user should fail."""
+    def test_pending_payment_cannot_be_approved_again(self, client, seed_users, seed_events):
+        """Approving a pending_payment participant should fail."""
+        diana_token = login(client, "diana")
+        event_id = seed_events["Pickleball Doubles"].id
+        client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
+
+        admin_token = login(client, "admin")
+        diana_id = seed_users["diana"].id
+        # First approve → pending_payment
+        client.put(
+            f"/events/{event_id}/participants/{diana_id}/approve",
+            headers=auth_header(admin_token),
+        )
+        # Second approve should fail
+        r = client.put(
+            f"/events/{event_id}/participants/{diana_id}/approve",
+            headers=auth_header(admin_token),
+        )
+        assert r.status_code == 400
+        assert "already approved" in r.json()["detail"].lower()
+
+
+class TestConfirmPayment:
+    def test_full_flow_pending_to_approved(self, client, seed_users, seed_events):
+        """Full flow: join → approve (pending_payment) → confirm payment (approved)."""
+        diana_token = login(client, "diana")
+        event_id = seed_events["Pickleball Doubles"].id
+        client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
+
+        admin_token = login(client, "admin")
+        diana_id = seed_users["diana"].id
+        # Approve → pending_payment
+        client.put(
+            f"/events/{event_id}/participants/{diana_id}/approve",
+            headers=auth_header(admin_token),
+        )
+
+        # Confirm payment → approved
+        r = client.put(
+            f"/events/{event_id}/participants/{diana_id}/confirm-payment",
+            headers=auth_header(admin_token),
+        )
+        assert r.status_code == 200
+        assert "confirmed" in r.json()["message"].lower()
+
+        # Verify diana is now approved and count incremented
+        events = client.get("/events", headers=auth_header(diana_token)).json()
+        pickleball = next(e for e in events if e["title"] == "Pickleball Doubles")
+        assert pickleball["join_status"] == "approved"
+        assert pickleball["current_participants"] == 4
+
+    def test_wrong_status_fails(self, client, seed_users, seed_events):
+        """Confirming payment for a pending (not pending_payment) participant fails."""
+        diana_token = login(client, "diana")
+        event_id = seed_events["Pickleball Doubles"].id
+        client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
+
+        admin_token = login(client, "admin")
+        diana_id = seed_users["diana"].id
+        r = client.put(
+            f"/events/{event_id}/participants/{diana_id}/confirm-payment",
+            headers=auth_header(admin_token),
+        )
+        assert r.status_code == 400
+        assert "not awaiting payment" in r.json()["detail"].lower()
+
+    def test_non_organizer_cannot_confirm(self, client, seed_users, seed_events):
+        """Non-organizer cannot confirm payment."""
+        diana_token = login(client, "diana")
+        event_id = seed_events["Pickleball Doubles"].id
+        client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
+
+        admin_token = login(client, "admin")
+        diana_id = seed_users["diana"].id
+        client.put(
+            f"/events/{event_id}/participants/{diana_id}/approve",
+            headers=auth_header(admin_token),
+        )
+
+        # Alice (non-organizer) tries to confirm
+        alice_token = login(client, "alice")
+        r = client.put(
+            f"/events/{event_id}/participants/{diana_id}/confirm-payment",
+            headers=auth_header(alice_token),
+        )
+        assert r.status_code == 403
+
+    def test_confirm_payment_full_event_fails(self, client, seed_users, seed_events):
+        """Confirming payment when event is full should fail."""
         # Create a tiny event with max=2 (organizer auto-takes 1 spot)
         token_bob = login(client, "bob")
         event_data = {
@@ -216,28 +304,111 @@ class TestApproveParticipant:
         r = client.post("/events", json=event_data, headers=auth_header(token_bob))
         tiny_id = r.json()["id"]
 
-        # Both alice and charlie join (pending) while event has 1 approved (organizer)
+        # Both alice and charlie join (pending)
         alice_token = login(client, "alice")
         charlie_token = login(client, "charlie")
         client.post(f"/events/{tiny_id}/join", headers=auth_header(alice_token))
         client.post(f"/events/{tiny_id}/join", headers=auth_header(charlie_token))
 
-        # Bob approves alice — now at capacity (organizer + alice = 2)
         alice_id = seed_users["alice"].id
-        r = client.put(
+        charlie_id = seed_users["charlie"].id
+
+        # Bob approves both → pending_payment
+        client.put(
             f"/events/{tiny_id}/participants/{alice_id}/approve",
+            headers=auth_header(token_bob),
+        )
+        client.put(
+            f"/events/{tiny_id}/participants/{charlie_id}/approve",
+            headers=auth_header(token_bob),
+        )
+
+        # Confirm alice's payment → approved (now at capacity)
+        r = client.put(
+            f"/events/{tiny_id}/participants/{alice_id}/confirm-payment",
             headers=auth_header(token_bob),
         )
         assert r.status_code == 200
 
-        # Bob tries to approve charlie, but event is full
-        charlie_id = seed_users["charlie"].id
+        # Confirm charlie's payment → should fail (full)
         r = client.put(
-            f"/events/{tiny_id}/participants/{charlie_id}/approve",
+            f"/events/{tiny_id}/participants/{charlie_id}/confirm-payment",
             headers=auth_header(token_bob),
         )
         assert r.status_code == 400
         assert "full" in r.json()["detail"].lower()
+
+
+class TestNotifyPayment:
+    def test_notify_payment_sets_payment_submitted(self, client, seed_users, seed_events):
+        """User notifies organizer of payment → status becomes payment_submitted."""
+        diana_token = login(client, "diana")
+        event_id = seed_events["Pickleball Doubles"].id
+        client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
+
+        admin_token = login(client, "admin")
+        diana_id = seed_users["diana"].id
+        client.put(
+            f"/events/{event_id}/participants/{diana_id}/approve",
+            headers=auth_header(admin_token),
+        )
+
+        # Diana notifies payment
+        r = client.put(
+            f"/events/{event_id}/notify-payment",
+            headers=auth_header(diana_token),
+        )
+        assert r.status_code == 200
+        assert "notified" in r.json()["message"].lower()
+
+        # Verify status is payment_submitted
+        events = client.get("/events", headers=auth_header(diana_token)).json()
+        pickleball = next(e for e in events if e["title"] == "Pickleball Doubles")
+        assert pickleball["join_status"] == "payment_submitted"
+        # Still not counted toward capacity
+        assert pickleball["current_participants"] == 3
+
+    def test_notify_payment_wrong_status_fails(self, client, seed_users, seed_events):
+        """Notifying payment when status is pending (not pending_payment) fails."""
+        diana_token = login(client, "diana")
+        event_id = seed_events["Pickleball Doubles"].id
+        client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
+
+        r = client.put(
+            f"/events/{event_id}/notify-payment",
+            headers=auth_header(diana_token),
+        )
+        assert r.status_code == 400
+        assert "not awaiting payment" in r.json()["detail"].lower()
+
+    def test_confirm_after_notify_works(self, client, seed_users, seed_events):
+        """Organizer can confirm payment after user notifies."""
+        diana_token = login(client, "diana")
+        event_id = seed_events["Pickleball Doubles"].id
+        client.post(f"/events/{event_id}/join", headers=auth_header(diana_token))
+
+        admin_token = login(client, "admin")
+        diana_id = seed_users["diana"].id
+        client.put(
+            f"/events/{event_id}/participants/{diana_id}/approve",
+            headers=auth_header(admin_token),
+        )
+        client.put(
+            f"/events/{event_id}/notify-payment",
+            headers=auth_header(diana_token),
+        )
+
+        # Organizer confirms
+        r = client.put(
+            f"/events/{event_id}/participants/{diana_id}/confirm-payment",
+            headers=auth_header(admin_token),
+        )
+        assert r.status_code == 200
+
+        events = client.get("/events", headers=auth_header(diana_token)).json()
+        pickleball = next(e for e in events if e["title"] == "Pickleball Doubles")
+        assert pickleball["join_status"] == "approved"
+        assert pickleball["current_participants"] == 4
 
 
 class TestRemoveParticipant:

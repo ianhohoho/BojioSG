@@ -57,6 +57,22 @@ struct Event: Codable, Identifiable {
         joinStatus == "pending"
     }
 
+    var isPendingPayment: Bool {
+        joinStatus == "pending_payment"
+    }
+
+    var isPaymentSubmitted: Bool {
+        joinStatus == "payment_submitted"
+    }
+
+    var pendingPaymentCount: Int {
+        participants?.filter { $0.status == "pending_payment" }.count ?? 0
+    }
+
+    var paymentSubmittedCount: Int {
+        participants?.filter { $0.status == "payment_submitted" }.count ?? 0
+    }
+
     var isJoinedOrPending: Bool {
         joinStatus != nil
     }

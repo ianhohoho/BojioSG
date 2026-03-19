@@ -57,9 +57,13 @@ backend/
 - `EventResponse` includes `organizer_phone_number` (from organizer's `phone_number`) for PayNow payment prompts.
 
 ## Event Participation
-- `EventParticipant` has a `status` column: `"pending"` (default) or `"approved"`.
-- `current_participants` only counts approved participants.
-- Join creates a pending request; organizer must approve.
+- `EventParticipant` has a `status` column with 4 values: `"pending"` → `"pending_payment"` → `"payment_submitted"` → `"approved"`.
+- `current_participants` only counts `"approved"` participants.
+- **3-step payment flow:**
+  1. User requests to join → `"pending"` → organizer gets `join_request` notification.
+  2. Organizer approves → `"pending_payment"` → user gets `payment_required` notification with PayNow details.
+  3. User pays externally, clicks notify → `"payment_submitted"` → organizer gets `payment_submitted` notification.
+  4. Organizer confirms payment → `"approved"` → user gets `approved` notification. Capacity re-checked here.
 - Removal is a hard delete — removed users can re-request. Removal creates a `Notification` for the removed user (with optional reason).
 - Organizers cannot join their own event.
 - When schema changes add columns to existing tables, delete `bojiosg.db` and re-seed (SQLite `create_all()` won't alter existing tables).
@@ -76,5 +80,5 @@ backend/
 - `Notification` model: `id, user_id (FK), event_id (FK), type, message, reason, is_read (Boolean), created_at`.
 - Created automatically when an organizer removes a participant (type=`"removed"`).
 - `reason` is optional — passed via `RemoveParticipantRequest` body on the DELETE endpoint.
-- Approval also creates a notification (type=`"approved"`, no reason field).
+- Notification types: `join_request`, `payment_required`, `payment_submitted`, `approved`, `removed`, `rejected`, `withdrawn`.
 ```

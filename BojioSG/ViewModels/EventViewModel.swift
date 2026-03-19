@@ -96,6 +96,42 @@ final class EventViewModel {
         }
     }
 
+    func notifyPayment(eventId: Int, token: String?) async {
+        guard let token else { return }
+        errorMessage = nil
+
+        do {
+            let _: ParticipantActionResponse = try await apiClient.request(
+                path: "/events/\(eventId)/notify-payment",
+                method: "PUT",
+                token: token
+            )
+            await fetchEvents(token: token)
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func confirmPayment(eventId: Int, userId: Int, token: String?) async {
+        guard let token else { return }
+        errorMessage = nil
+
+        do {
+            let _: ParticipantActionResponse = try await apiClient.request(
+                path: "/events/\(eventId)/participants/\(userId)/confirm-payment",
+                method: "PUT",
+                token: token
+            )
+            await fetchEvents(token: token)
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func removeParticipant(eventId: Int, userId: Int, token: String?, reason: String? = nil) async {
         guard let token else { return }
         errorMessage = nil

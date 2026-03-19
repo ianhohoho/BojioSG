@@ -123,8 +123,8 @@ def test_empty_notifications_list(client, seed_users):
     assert r.json() == []
 
 
-def test_approve_creates_notification(client, seed_events, seed_users, db_session):
-    """Approving a participant creates a notification."""
+def test_approve_creates_payment_required_notification(client, seed_events, seed_users, db_session):
+    """Approving a participant creates a payment_required notification."""
     event = seed_events["Pickleball Doubles"]
     diana = seed_users["diana"]
 
@@ -146,9 +146,68 @@ def test_approve_creates_notification(client, seed_events, seed_users, db_sessio
     notifications = r.json()
     assert len(notifications) == 1
     n = notifications[0]
-    assert n["type"] == "approved"
+    assert n["type"] == "payment_required"
+    assert "PayNow" in n["message"]
     assert n["event_title"] == "Pickleball Doubles"
     assert n["is_read"] is False
+
+
+def test_confirm_payment_creates_approved_notification(client, seed_events, seed_users, db_session):
+    """Confirming payment creates an approved notification."""
+    event = seed_events["Pickleball Doubles"]
+    diana = seed_users["diana"]
+
+    # Add diana as pending_payment
+    p = EventParticipant(event_id=event.id, user_id=diana.id, status="pending_payment")
+    db_session.add(p)
+    db_session.commit()
+
+    admin_token = login(client, "admin")
+    r = client.put(
+        f"/events/{event.id}/participants/{diana.id}/confirm-payment",
+        headers=auth_header(admin_token),
+    )
+    assert r.status_code == 200
+
+    diana_token = login(client, "diana")
+    r = client.get("/notifications", headers=auth_header(diana_token))
+    assert r.status_code == 200
+    notifications = r.json()
+    assert len(notifications) == 1
+    n = notifications[0]
+    assert n["type"] == "approved"
+    assert "confirmed" in n["message"].lower()
+    assert n["event_title"] == "Pickleball Doubles"
+
+
+def test_notify_payment_creates_notification_for_organizer(client, seed_events, seed_users, db_session):
+    """User notifying payment creates a payment_submitted notification for the organizer."""
+    event = seed_events["Pickleball Doubles"]
+    diana = seed_users["diana"]
+
+    # Add diana as pending_payment
+    p = EventParticipant(event_id=event.id, user_id=diana.id, status="pending_payment")
+    db_session.add(p)
+    db_session.commit()
+
+    diana_token = login(client, "diana")
+    r = client.put(
+        f"/events/{event.id}/notify-payment",
+        headers=auth_header(diana_token),
+    )
+    assert r.status_code == 200
+
+    # Admin (organizer) should have the notification
+    admin_token = login(client, "admin")
+    r = client.get("/notifications", headers=auth_header(admin_token))
+    assert r.status_code == 200
+    notifications = r.json()
+    assert len(notifications) == 1
+    n = notifications[0]
+    assert n["type"] == "payment_submitted"
+    assert "payment" in n["message"].lower()
+    assert "Diana" in n["message"] or "diana" in n["message"]
+    assert n["event_title"] == "Pickleball Doubles"
 
 
 def test_notifications_unauthenticated(client):

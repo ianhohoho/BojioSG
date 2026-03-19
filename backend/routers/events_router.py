@@ -244,13 +244,118 @@ def approve_participant(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Participant not found",
         )
-    if participation.status == "approved":
+    if participation.status in ("pending_payment", "payment_submitted", "approved"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Participant is already approved",
         )
 
-    # Re-check capacity before approving
+    participation.status = "pending_payment"
+    organizer = db.query(User).filter(User.id == event.organizer_id).first()
+    organizer_name = organizer.nickname or organizer.username
+    organizer_phone = organizer.phone_number or "N/A"
+    notification = Notification(
+        user_id=user_id,
+        event_id=event_id,
+        type="payment_required",
+        message=f"You've been approved for '{event.title}' — please pay ${event.price:.2f} via PayNow to {organizer_phone} ({organizer_name})",
+    )
+    db.add(notification)
+    db.commit()
+
+    return ParticipantActionResponse(message="Participant approved — awaiting payment")
+
+
+@router.put("/{event_id}/notify-payment", response_model=ParticipantActionResponse)
+def notify_payment(
+    event_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found",
+        )
+
+    participation = (
+        db.query(EventParticipant)
+        .filter(
+            EventParticipant.event_id == event_id,
+            EventParticipant.user_id == current_user.id,
+        )
+        .first()
+    )
+    if not participation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Participant not found",
+        )
+    if participation.status != "pending_payment":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You are not awaiting payment for this event",
+        )
+
+    participation.status = "payment_submitted"
+    payer_name = current_user.nickname or current_user.username
+    notification = Notification(
+        user_id=event.organizer_id,
+        event_id=event_id,
+        type="payment_submitted",
+        message=f"{payer_name} has made payment for '{event.title}'",
+    )
+    db.add(notification)
+    db.commit()
+
+    return ParticipantActionResponse(
+        message="Organiser has been notified of your payment"
+    )
+
+
+@router.put(
+    "/{event_id}/participants/{user_id}/confirm-payment",
+    response_model=ParticipantActionResponse,
+)
+def confirm_payment(
+    event_id: int,
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found",
+        )
+    if event.organizer_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the organizer can confirm payment",
+        )
+
+    participation = (
+        db.query(EventParticipant)
+        .filter(
+            EventParticipant.event_id == event_id,
+            EventParticipant.user_id == user_id,
+        )
+        .first()
+    )
+    if not participation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Participant not found",
+        )
+    if participation.status not in ("pending_payment", "payment_submitted"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Participant is not awaiting payment",
+        )
+
+    # Check capacity before confirming
     approved_count = (
         db.query(EventParticipant)
         .filter(
@@ -270,12 +375,12 @@ def approve_participant(
         user_id=user_id,
         event_id=event_id,
         type="approved",
-        message=f"You've been approved for '{event.title}'",
+        message=f"Your payment for '{event.title}' has been confirmed — you're in!",
     )
     db.add(notification)
     db.commit()
 
-    return ParticipantActionResponse(message="Participant approved")
+    return ParticipantActionResponse(message="Payment confirmed — participant approved")
 
 
 @router.delete(
@@ -319,6 +424,9 @@ def remove_participant(
     if participation.status == "pending":
         notif_type = "rejected"
         notif_message = f"Your request to join '{event.title}' was declined"
+    elif participation.status in ("pending_payment", "payment_submitted"):
+        notif_type = "removed"
+        notif_message = f"You were removed from '{event.title}'"
     else:
         notif_type = "removed"
         notif_message = f"You were removed from '{event.title}'"
