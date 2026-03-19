@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta, timezone
 
 from database import Base, SessionLocal, engine
-from models import Event, EventParticipant, User
+from models import Event, EventParticipant, Notification, User
 from auth import hash_password
 
 # Create tables
@@ -12,13 +12,14 @@ Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
 
-def get_or_create_user(username: str, password: str = "password123", nickname: str | None = None) -> User:
+def get_or_create_user(username: str, password: str = "password123", nickname: str | None = None, phone_number: str | None = None) -> User:
     user = db.query(User).filter(User.username == username).first()
     if not user:
         user = User(
             username=username,
             password_hash=hash_password(password),
             nickname=nickname,
+            phone_number=phone_number,
         )
         db.add(user)
         db.commit()
@@ -30,11 +31,11 @@ def get_or_create_user(username: str, password: str = "password123", nickname: s
 
 
 # Create users (password = username for all)
-admin = get_or_create_user("admin", "admin", nickname="Admin")
-alice = get_or_create_user("alice", "alice", nickname="Alice Tan")
-bob = get_or_create_user("bob", "bob", nickname="Bobby")
-charlie = get_or_create_user("charlie", "charlie", nickname="Charlie Lim")
-diana = get_or_create_user("diana", "diana", nickname="Diana")
+admin = get_or_create_user("admin", "admin", nickname="Admin", phone_number="91234567")
+alice = get_or_create_user("alice", "alice", nickname="Alice Tan", phone_number="98765432")
+bob = get_or_create_user("bob", "bob", nickname="Bobby", phone_number="81112222")
+charlie = get_or_create_user("charlie", "charlie", nickname="Charlie Lim", phone_number="83334444")
+diana = get_or_create_user("diana", "diana", nickname="Diana", phone_number="85556666")
 
 # Sample events
 now = datetime.now(timezone.utc)

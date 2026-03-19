@@ -9,8 +9,10 @@ enum EventFilter: String, CaseIterable {
 struct EventListView: View {
     @Environment(AuthService.self) private var authService
     @State private var viewModel = EventViewModel()
+    @State private var notificationViewModel = NotificationViewModel()
     @State private var showingCreateSheet = false
     @State private var showingProfileSheet = false
+    @State private var showingInboxSheet = false
     @State private var filter: EventFilter = .all
 
     private var filteredEvents: [Event] {
@@ -113,6 +115,7 @@ struct EventListView: View {
                     }
                     .refreshable {
                         await viewModel.fetchEvents(token: authService.token)
+                        await notificationViewModel.fetchNotifications(token: authService.token)
                     }
                 }
             }
@@ -123,6 +126,26 @@ struct EventListView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 12) {
+                        Button {
+                            showingInboxSheet = true
+                        } label: {
+                            Image(systemName: "bell.fill")
+                                .foregroundStyle(Color.accentColor)
+                                .overlay(alignment: .topTrailing) {
+                                    if notificationViewModel.unreadCount > 0 {
+                                        Text("\(notificationViewModel.unreadCount)")
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                            .foregroundStyle(.white)
+                                            .padding(.horizontal, 5)
+                                            .padding(.vertical, 1)
+                                            .background(.red)
+                                            .clipShape(Capsule())
+                                            .offset(x: 8, y: -8)
+                                    }
+                                }
+                        }
+
                         Button {
                             showingProfileSheet = true
                         } label: {
@@ -146,6 +169,13 @@ struct EventListView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingInboxSheet, onDismiss: {
+                Task {
+                    await notificationViewModel.fetchNotifications(token: authService.token)
+                }
+            }) {
+                InboxView(viewModel: notificationViewModel)
+            }
             .sheet(isPresented: $showingProfileSheet) {
                 ProfileView()
             }
@@ -154,6 +184,7 @@ struct EventListView: View {
             }
             .task {
                 await viewModel.fetchEvents(token: authService.token)
+                await notificationViewModel.fetchNotifications(token: authService.token)
             }
         }
     }

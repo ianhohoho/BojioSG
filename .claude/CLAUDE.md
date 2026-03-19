@@ -22,6 +22,7 @@ BojioSG/
 ├── Views/           # SwiftUI views
 │   ├── Auth/        # Login, Register
 │   ├── Events/      # Event list, detail, row, create
+│   ├── Inbox/       # Notification inbox
 │   └── Profile/     # User profile
 ├── ViewModels/      # ObservableObject view models
 ├── Services/        # API client, auth service
@@ -66,6 +67,8 @@ xcodegen generate
 - `PUT /events/{id}/participants/{user_id}/approve` — organizer approves (auth required)
 - `DELETE /events/{id}/participants/{user_id}` — organizer removes participant (auth required)
 - `DELETE /events/{id}/leave` — user withdraws from event (auth required)
+- `GET /notifications` — list user's notifications (auth required)
+- `PUT /notifications/{id}/read` — mark notification as read (auth required)
 
 ## API Base URL
 - Development: `http://localhost:8000`

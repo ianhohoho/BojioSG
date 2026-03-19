@@ -3,13 +3,14 @@ from sqlalchemy.orm import Session, joinedload
 
 from auth import get_current_user, get_optional_user
 from database import get_db
-from models import Event, EventParticipant, User
+from models import Event, EventParticipant, Notification, User
 from schemas import (
     EventCreate,
     EventResponse,
     JoinResponse,
     ParticipantActionResponse,
     ParticipantResponse,
+    RemoveParticipantRequest,
 )
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -51,6 +52,7 @@ def _event_to_response(event: Event, current_user: User | None = None) -> EventR
         current_participants=approved_count,
         organizer_id=event.organizer_id,
         organizer_username=event.organizer.nickname or event.organizer.username,
+        organizer_phone_number=event.organizer.phone_number,
         is_organizer=is_organizer,
         join_status=join_status,
         participants=participants,
@@ -258,6 +260,7 @@ def approve_participant(
 def remove_participant(
     event_id: int,
     user_id: int,
+    body: RemoveParticipantRequest | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -287,6 +290,15 @@ def remove_participant(
             detail="Participant not found",
         )
 
+    reason = body.reason if body else None
+    notification = Notification(
+        user_id=user_id,
+        event_id=event_id,
+        type="removed",
+        message=f"You were removed from '{event.title}'",
+        reason=reason,
+    )
+    db.add(notification)
     db.delete(participation)
     db.commit()
 

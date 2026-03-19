@@ -5,6 +5,11 @@ struct EventDetailView: View {
     let eventId: Int
     @Bindable var viewModel: EventViewModel
 
+    @State private var isEditMode = false
+    @State private var showRemoveConfirmation = false
+    @State private var removeTargetParticipant: Participant?
+    @State private var removeReason = ""
+
     private var event: Event? {
         viewModel.events.first(where: { $0.id == eventId })
     }
@@ -175,6 +180,16 @@ struct EventDetailView: View {
                                     Text("Participants")
                                         .font(.headline)
                                     Spacer()
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            isEditMode.toggle()
+                                        }
+                                    } label: {
+                                        Text(isEditMode ? "Done" : "Edit")
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(Color.accentColor)
+                                    }
                                     Text("\(approved.count)")
                                         .font(.subheadline)
                                         .fontWeight(.semibold)
@@ -188,6 +203,19 @@ struct EventDetailView: View {
                                 } else {
                                     ForEach(approved) { participant in
                                         HStack(spacing: 12) {
+                                            if isEditMode {
+                                                Button {
+                                                    removeTargetParticipant = participant
+                                                    removeReason = ""
+                                                    showRemoveConfirmation = true
+                                                } label: {
+                                                    Image(systemName: "minus.circle.fill")
+                                                        .font(.title3)
+                                                        .foregroundStyle(.red.opacity(0.7))
+                                                }
+                                                .transition(.move(edge: .leading).combined(with: .opacity))
+                                            }
+
                                             Image(systemName: "person.circle.fill")
                                                 .font(.title3)
                                                 .foregroundStyle(.secondary)
@@ -197,20 +225,6 @@ struct EventDetailView: View {
                                                 .fontWeight(.medium)
 
                                             Spacer()
-
-                                            Button {
-                                                Task {
-                                                    await viewModel.removeParticipant(
-                                                        eventId: event.id,
-                                                        userId: participant.id,
-                                                        token: authService.token
-                                                    )
-                                                }
-                                            } label: {
-                                                Image(systemName: "minus.circle.fill")
-                                                    .font(.title3)
-                                                    .foregroundStyle(.red.opacity(0.7))
-                                            }
                                         }
                                         .padding(.vertical, 4)
                                     }
@@ -227,17 +241,36 @@ struct EventDetailView: View {
 
                         // Status messages
                         if event.isOrganizer != true, let joinMessage = viewModel.joinMessage {
-                            HStack(spacing: 8) {
-                                Image(systemName: "checkmark.circle.fill")
-                                Text(joinMessage)
+                            VStack(spacing: 10) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                    Text(joinMessage)
+                                }
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.green)
+                                .frame(maxWidth: .infinity)
+                                .padding(14)
+                                .background(.green.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                                if let phone = event.organizerPhoneNumber, !phone.isEmpty {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Pay \(event.formattedPrice) via PayNow")
+                                                .fontWeight(.semibold)
+                                            Text("Send to \(phone) (\(event.organizerUsername))")
+                                        }
+                                    }
+                                    .font(.subheadline)
+                                    .foregroundStyle(.blue)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(14)
+                                    .background(.blue.opacity(0.08))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
                             }
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.green)
-                            .frame(maxWidth: .infinity)
-                            .padding(14)
-                            .background(.green.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
                             .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
 
@@ -364,6 +397,30 @@ struct EventDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .animation(.easeInOut(duration: 0.2), value: viewModel.joinMessage)
         .animation(.easeInOut(duration: 0.2), value: viewModel.errorMessage)
+        .alert("Remove Participant?", isPresented: $showRemoveConfirmation) {
+            TextField("Reason (optional)", text: $removeReason)
+            Button("Cancel", role: .cancel) {
+                removeTargetParticipant = nil
+            }
+            Button("Remove", role: .destructive) {
+                if let participant = removeTargetParticipant, let event {
+                    let reason = removeReason.trimmingCharacters(in: .whitespacesAndNewlines)
+                    Task {
+                        await viewModel.removeParticipant(
+                            eventId: event.id,
+                            userId: participant.id,
+                            token: authService.token,
+                            reason: reason.isEmpty ? nil : reason
+                        )
+                    }
+                }
+                removeTargetParticipant = nil
+            }
+        } message: {
+            if let name = removeTargetParticipant?.username {
+                Text("Are you sure you want to remove \(name)? They will be notified.")
+            }
+        }
     }
 }
 

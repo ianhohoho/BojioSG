@@ -96,14 +96,16 @@ final class EventViewModel {
         }
     }
 
-    func removeParticipant(eventId: Int, userId: Int, token: String?) async {
+    func removeParticipant(eventId: Int, userId: Int, token: String?, reason: String? = nil) async {
         guard let token else { return }
         errorMessage = nil
 
         do {
+            let body: RemoveParticipantRequest? = reason.map { RemoveParticipantRequest(reason: $0) }
             let _: ParticipantActionResponse = try await apiClient.request(
                 path: "/events/\(eventId)/participants/\(userId)",
                 method: "DELETE",
+                body: body,
                 token: token
             )
             await fetchEvents(token: token)

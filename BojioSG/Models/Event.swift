@@ -25,6 +25,7 @@ struct Event: Codable, Identifiable {
     let currentParticipants: Int
     let organizerId: Int
     let organizerUsername: String
+    let organizerPhoneNumber: String?
     let isOrganizer: Bool?
     let joinStatus: String?
     let participants: [Participant]?
@@ -40,6 +41,7 @@ struct Event: Codable, Identifiable {
         case currentParticipants = "current_participants"
         case organizerId = "organizer_id"
         case organizerUsername = "organizer_username"
+        case organizerPhoneNumber = "organizer_phone_number"
         case isOrganizer = "is_organizer"
         case joinStatus = "join_status"
         case createdAt = "created_at"
@@ -104,8 +106,9 @@ struct Event: Codable, Identifiable {
         if let date = formatter.date(from: dateTime) {
             return Self.displayFormatter.string(from: date)
         }
-        // Try naive datetime (Python format without timezone)
-        if let date = Self.naiveDateFormatter.date(from: dateTime) {
+        // Try naive datetime (Python format without timezone, strip fractional seconds)
+        let stripped = dateTime.replacingOccurrences(of: "\\.\\d+$", with: "", options: .regularExpression)
+        if let date = Self.naiveDateFormatter.date(from: stripped) {
             return Self.displayFormatter.string(from: date)
         }
         return dateTime
@@ -149,4 +152,8 @@ struct JoinResponse: Codable {
 
 struct ParticipantActionResponse: Codable {
     let message: String
+}
+
+struct RemoveParticipantRequest: Encodable {
+    let reason: String?
 }

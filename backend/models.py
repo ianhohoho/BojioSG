@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -18,6 +18,7 @@ class User(Base):
 
     organized_events = relationship("Event", back_populates="organizer")
     participations = relationship("EventParticipant", back_populates="user")
+    notifications = relationship("Notification", back_populates="user")
 
 
 class Event(Base):
@@ -49,3 +50,19 @@ class EventParticipant(Base):
 
     event = relationship("Event", back_populates="participants")
     user = relationship("User", back_populates="participations")
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    event_id = Column(Integer, ForeignKey("events.id"), nullable=False)
+    type = Column(String, nullable=False)
+    message = Column(String, nullable=False)
+    reason = Column(String, nullable=True)
+    is_read = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User", back_populates="notifications")
+    event = relationship("Event")

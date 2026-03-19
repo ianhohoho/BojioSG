@@ -77,6 +77,7 @@ class EventResponse(BaseModel):
     current_participants: int
     organizer_id: int
     organizer_username: str
+    organizer_phone_number: str | None = None
     is_organizer: bool | None = None
     join_status: str | None = None
     participants: list[ParticipantResponse] | None = None
@@ -92,3 +93,20 @@ class JoinResponse(BaseModel):
 
 class ParticipantActionResponse(BaseModel):
     message: str
+
+
+class RemoveParticipantRequest(BaseModel):
+    reason: str | None = None
+
+
+class NotificationResponse(BaseModel):
+    id: int
+    event_id: int
+    event_title: str
+    type: str
+    message: str
+    reason: str | None = None
+    is_read: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
