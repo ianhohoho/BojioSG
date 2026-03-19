@@ -26,10 +26,9 @@
 ## Prerequisites
 
 - **macOS** with Xcode 15+ installed
-- **Python 3.12+**
 - **XcodeGen** — `brew install xcodegen`
+- **An iPhone** plugged into your Mac via USB/USB-C
 - **An Apple Developer account** (free tier works for device testing)
-- (Optional) **Fly.io CLI** — `brew install flyctl` (for deployment)
 
 ## Getting Started
 
@@ -40,60 +39,19 @@ git clone git@github.com:ianhohoho/BojioSG.git
 cd BojioSG
 ```
 
-### 2. Set up the backend
+### 2. Generate the Xcode project
 
 ```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 3. Seed sample data
-
-```bash
-python seed.py
-```
-
-This creates 5 test users and 12 sample events. Seed user credentials (password = username):
-
-| Username | Password | Nickname |
-|----------|----------|----------|
-| admin | admin | Admin |
-| alice | alice | Alice Tan |
-| bob | bob | Bobby |
-| charlie | charlie | Charlie Lim |
-| diana | diana | Diana |
-
-### 4. Start the backend server
-
-```bash
-python main.py
-```
-
-The server runs at **http://localhost:8000**. API docs are at http://localhost:8000/docs.
-
-### 5. Generate the Xcode project
-
-```bash
-cd ..  # back to repo root
 xcodegen generate
 ```
 
-### 6. Open in Xcode
+### 3. Open in Xcode
 
 ```bash
 open BojioSG.xcodeproj
 ```
 
-## Running on the iOS Simulator
-
-1. In Xcode, select a simulator (e.g. **iPhone 16 Pro**) from the device dropdown
-2. Make sure the backend is running (`python main.py`)
-3. Press **Cmd+R** to build and run
-4. The simulator app will connect to `http://localhost:8000`
-
-## Running on a Physical iPhone
+### 4. Run on your iPhone
 
 1. **Plug your iPhone into your Mac** via USB/USB-C
 2. On your iPhone, go to **Settings → Privacy & Security → Developer Mode** and enable it (restart required)
@@ -103,29 +61,18 @@ open BojioSG.xcodeproj
    - Xcode will auto-create a provisioning profile
 4. If prompted on your iPhone, go to **Settings → General → VPN & Device Management** and trust the developer certificate
 5. Press **Cmd+R** to build and run on your iPhone
-6. The app on a physical device connects to the **production API** (`https://bojiosg-api.fly.dev`), not localhost
 
-> **Note:** Only the iOS Simulator uses `localhost`. Physical devices (including debug builds) always hit the production endpoint.
+The app connects to the hosted backend at `https://bojiosg-api.fly.dev` — no local server setup needed.
 
-## Running Tests
+### Test accounts
 
-### Backend unit tests (63 tests)
-
-```bash
-cd backend
-source venv/bin/activate
-python -m pytest tests/ -v
-```
-
-### Smoke tests against a live endpoint
-
-```bash
-# Against local
-python test_remote.py http://localhost:8000
-
-# Against production
-python test_remote.py https://bojiosg-api.fly.dev
-```
+| Username | Password | Nickname |
+|----------|----------|----------|
+| admin | admin | Admin |
+| alice | alice | Alice Tan |
+| bob | bob | Bobby |
+| charlie | charlie | Charlie Lim |
+| diana | diana | Diana |
 
 ## Project Structure
 
