@@ -16,16 +16,29 @@ struct EventListView: View {
     @State private var navigationPath = NavigationPath()
     @State private var pendingEventNavigation: Int?
     @State private var filter: EventFilter = .all
+    @State private var selectedSport: String?
+
+    private static let sportTypes = [
+        ("Pickleball", "figure.pickleball", Color.green),
+        ("Badminton", "figure.badminton", Color.orange),
+        ("Tennis", "figure.tennis", Color.blue),
+        ("Basketball", "figure.basketball", Color.red),
+    ]
 
     private var filteredEvents: [Event] {
+        var events: [Event]
         switch filter {
         case .all:
-            return viewModel.events
+            events = viewModel.events
         case .organised:
-            return viewModel.events.filter { $0.isOrganizer == true }
+            events = viewModel.events.filter { $0.isOrganizer == true }
         case .joined:
-            return viewModel.events.filter { $0.isJoinedOrPending }
+            events = viewModel.events.filter { $0.isJoinedOrPending }
         }
+        if let sport = selectedSport {
+            events = events.filter { $0.sportType.lowercased() == sport.lowercased() }
+        }
+        return events
     }
 
     private var emptyStateIcon: String {
@@ -93,6 +106,39 @@ struct EventListView: View {
                         }
                         .padding(.horizontal, 16)
                         .padding(.top, 4)
+
+                        // Sport type filter
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(Self.sportTypes, id: \.0) { name, icon, color in
+                                    let isSelected = selectedSport == name
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            selectedSport = isSelected ? nil : name
+                                        }
+                                    } label: {
+                                        HStack(spacing: 6) {
+                                            Image(systemName: icon)
+                                                .font(.caption)
+                                            Text(name)
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                        }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(isSelected ? color.opacity(0.15) : Color.gray.opacity(0.08))
+                                        .foregroundStyle(isSelected ? color : .secondary)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .strokeBorder(isSelected ? color.opacity(0.3) : .clear, lineWidth: 1)
+                                        )
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                        }
+                        .padding(.top, 2)
 
                         if filteredEvents.isEmpty {
                             ContentUnavailableView(

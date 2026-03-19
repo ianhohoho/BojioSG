@@ -81,17 +81,17 @@ def _get_event_or_404(db: Session, event_id: int) -> Event:
 
 @router.get("", response_model=list[EventResponse])
 def list_events(
+    sport_type: str | None = None,
     db: Session = Depends(get_db),
     current_user: User | None = Depends(get_optional_user),
 ):
-    events = (
-        db.query(Event)
-        .options(
-            joinedload(Event.organizer),
-            joinedload(Event.participants).joinedload(EventParticipant.user),
-        )
-        .order_by(Event.date_time)
-        .all()
+    query = db.query(Event).options(
+        joinedload(Event.organizer),
+        joinedload(Event.participants).joinedload(EventParticipant.user),
+    )
+    if sport_type:
+        query = query.filter(Event.sport_type == sport_type)
+    events = query.order_by(Event.date_time).all(
     )
     return [_event_to_response(e, current_user) for e in events]
 
@@ -363,6 +363,14 @@ def leave_event(
             detail="You are not a participant of this event",
         )
 
+    leaver_name = current_user.nickname or current_user.username
+    notification = Notification(
+        user_id=event.organizer_id,
+        event_id=event_id,
+        type="withdrawn",
+        message=f"{leaver_name} withdrew from '{event.title}'",
+    )
+    db.add(notification)
     db.delete(participation)
     db.commit()
 

@@ -94,6 +94,27 @@ def test_join_request_notifies_organizer(client, seed_events, seed_users):
     assert n["event_title"] == "Pickleball Doubles"
 
 
+def test_withdraw_notifies_organizer(client, seed_events, seed_users):
+    """Withdrawing from an event creates a notification for the organizer."""
+    event = seed_events["Pickleball Doubles"]  # organized by admin
+    alice_token = login(client, "alice")
+
+    # Alice leaves
+    r = client.delete(f"/events/{event.id}/leave", headers=auth_header(alice_token))
+    assert r.status_code == 200
+
+    # Admin should have a notification
+    admin_token = login(client, "admin")
+    r = client.get("/notifications", headers=auth_header(admin_token))
+    assert r.status_code == 200
+    notifications = r.json()
+    assert len(notifications) == 1
+    n = notifications[0]
+    assert n["type"] == "withdrawn"
+    assert "Alice Tan" in n["message"] or "alice" in n["message"]
+    assert n["event_title"] == "Pickleball Doubles"
+
+
 def test_empty_notifications_list(client, seed_users):
     """User with no notifications gets empty list."""
     token = login(client, "admin")

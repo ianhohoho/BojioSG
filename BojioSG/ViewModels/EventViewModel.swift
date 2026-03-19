@@ -122,12 +122,11 @@ final class EventViewModel {
         joinMessage = nil
 
         do {
-            let response: ParticipantActionResponse = try await apiClient.request(
+            let _: ParticipantActionResponse = try await apiClient.request(
                 path: "/events/\(eventId)/leave",
                 method: "DELETE",
                 token: token
             )
-            joinMessage = response.message
             await fetchEvents(token: token)
         } catch let error as APIError {
             errorMessage = error.errorDescription
