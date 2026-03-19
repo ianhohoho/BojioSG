@@ -90,7 +90,7 @@ struct Event: Codable, Identifiable {
     }
 
     var formattedPrice: String {
-        String(format: "$%.2f", price)
+        String(format: "$%.2f/pax", price)
     }
 
     var sportColor: Color {
@@ -144,7 +144,9 @@ struct Event: Codable, Identifiable {
 
     private static let displayFormatter: DateFormatter = {
         let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd hh:mm a"
+        f.dateFormat = "d MMM yyyy, ha"
+        f.amSymbol = "am"
+        f.pmSymbol = "pm"
         return f
     }()
 

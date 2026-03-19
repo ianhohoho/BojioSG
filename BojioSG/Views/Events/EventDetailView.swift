@@ -72,7 +72,7 @@ struct EventDetailView: View {
                             DetailInfoRow(
                                 icon: "dollarsign.circle.fill",
                                 iconColor: .green,
-                                label: "Price",
+                                label: "Price/pax",
                                 value: event.formattedPrice
                             )
                             Divider().padding(.leading, 52)

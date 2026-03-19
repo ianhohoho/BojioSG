@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <text x="512" y="480" text-anchor="middle" dominant-baseline="central"
+        font-family="SF Pro Rounded, -apple-system, Helvetica Neue, Arial, sans-serif"
+        font-size="320" font-weight="800" fill="white" letter-spacing="-10">
+    bojio
+  </text>
+  <text x="512" y="660" text-anchor="middle" dominant-baseline="central"
+        font-family="SF Pro Rounded, -apple-system, Helvetica Neue, Arial, sans-serif"
+        font-size="100" font-weight="600" fill="rgba(255,255,255,0.7)" letter-spacing="2">
+    SG
+  </text>
+</svg>

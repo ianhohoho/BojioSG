@@ -25,6 +25,7 @@ struct EventListView: View {
     @State private var filter: EventFilter = .all
     @State private var selectedSport: String?
     @State private var timeFilter: TimeFilter = .all
+    @State private var sortAscending = true
 
     private static let sportTypes = [
         ("Pickleball", "figure.pickleball", Color.green),
@@ -58,6 +59,11 @@ struct EventListView: View {
                 guard let date = event.parsedDate else { return true }
                 return date >= now && date <= cutoff
             }
+        }
+        events.sort { a, b in
+            let dateA = a.parsedDate ?? .distantFuture
+            let dateB = b.parsedDate ?? .distantFuture
+            return sortAscending ? dateA < dateB : dateA > dateB
         }
         return events
     }
@@ -185,7 +191,7 @@ struct EventListView: View {
                             }
                             .padding(.top, 2)
 
-                            // Time filter
+                            // Time filter + sort
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     ForEach(TimeFilter.allCases, id: \.self) { option in
@@ -212,6 +218,29 @@ struct EventListView: View {
                                                     .strokeBorder(isSelected ? Color.purple.opacity(0.3) : .clear, lineWidth: 1)
                                             )
                                         }
+                                    }
+
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            sortAscending.toggle()
+                                        }
+                                    } label: {
+                                        HStack(spacing: 6) {
+                                            Image(systemName: sortAscending ? "arrow.up" : "arrow.down")
+                                                .font(.caption)
+                                            Text(sortAscending ? "Earliest" : "Latest")
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                        }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Color.purple.opacity(0.15))
+                                        .foregroundStyle(.purple)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .strokeBorder(Color.purple.opacity(0.3), lineWidth: 1)
+                                        )
                                     }
                                 }
                                 .padding(.horizontal, 16)

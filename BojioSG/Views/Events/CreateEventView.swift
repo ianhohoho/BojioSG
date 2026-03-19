@@ -36,7 +36,7 @@ struct CreateEventView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         label("Sport", icon: "sportscourt.fill")
 
-                        HStack(spacing: 10) {
+                        FlowLayout(spacing: 10) {
                             ForEach(sportTypes, id: \.self) { sport in
                                 sportButton(sport)
                             }
@@ -100,7 +100,7 @@ struct CreateEventView: View {
 
                         HStack {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("Price ($)")
+                                Text("Price/pax ($)")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 TextField("0.00", text: $priceText)
