@@ -51,6 +51,49 @@ def test_remove_without_reason_creates_notification(client, seed_events, seed_us
     assert notifications[0]["event_title"] == "Pickleball Doubles"
 
 
+def test_reject_pending_creates_rejected_notification(client, seed_events, seed_users):
+    """Rejecting a pending request creates a 'rejected' notification."""
+    event = seed_events["Pickleball Doubles"]
+    diana = seed_users["diana"]
+
+    # Diana joins (pending)
+    diana_token = login(client, "diana")
+    client.post(f"/events/{event.id}/join", headers=auth_header(diana_token))
+
+    # Admin rejects
+    admin_token = login(client, "admin")
+    client.delete(
+        f"/events/{event.id}/participants/{diana.id}",
+        headers=auth_header(admin_token),
+    )
+
+    r = client.get("/notifications", headers=auth_header(diana_token))
+    assert r.status_code == 200
+    notifications = r.json()
+    assert len(notifications) == 1
+    n = notifications[0]
+    assert n["type"] == "rejected"
+    assert "declined" in n["message"]
+    assert n["event_title"] == "Pickleball Doubles"
+
+
+def test_join_request_notifies_organizer(client, seed_events, seed_users):
+    """Joining an event creates a notification for the organizer."""
+    event = seed_events["Pickleball Doubles"]  # organized by admin
+    diana_token = login(client, "diana")
+    client.post(f"/events/{event.id}/join", headers=auth_header(diana_token))
+
+    admin_token = login(client, "admin")
+    r = client.get("/notifications", headers=auth_header(admin_token))
+    assert r.status_code == 200
+    notifications = r.json()
+    assert len(notifications) == 1
+    n = notifications[0]
+    assert n["type"] == "join_request"
+    assert "Diana" in n["message"] or "diana" in n["message"]
+    assert n["event_title"] == "Pickleball Doubles"
+
+
 def test_empty_notifications_list(client, seed_users):
     """User with no notifications gets empty list."""
     token = login(client, "admin")

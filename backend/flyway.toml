@@ -1,0 +1,12 @@
+[environments.supabase]
+url = "jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?ssl=true&sslmode=require&prepareThreshold=0"
+user = "postgres.psnwbnvupwoousudrtuz"
+password = "${env.DB_PASSWORD}"
+schemas = ["public"]
+
+[flyway]
+environment = "supabase"
+locations = ["filesystem:sql/migrations"]
+baselineVersion = "1"
+baselineDescription = "create_initial_tables"
+cleanDisabled = true

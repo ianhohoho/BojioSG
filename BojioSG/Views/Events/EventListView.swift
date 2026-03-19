@@ -13,6 +13,8 @@ struct EventListView: View {
     @State private var showingCreateSheet = false
     @State private var showingProfileSheet = false
     @State private var showingInboxSheet = false
+    @State private var navigationPath = NavigationPath()
+    @State private var pendingEventNavigation: Int?
     @State private var filter: EventFilter = .all
 
     private var filteredEvents: [Event] {
@@ -43,7 +45,7 @@ struct EventListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             Group {
                 if viewModel.isLoading && viewModel.events.isEmpty {
                     ProgressView("Loading events...")
@@ -173,8 +175,15 @@ struct EventListView: View {
                 Task {
                     await notificationViewModel.fetchNotifications(token: authService.token)
                 }
+                if let eventId = pendingEventNavigation {
+                    pendingEventNavigation = nil
+                    navigationPath.append(eventId)
+                }
             }) {
-                InboxView(viewModel: notificationViewModel)
+                InboxView(viewModel: notificationViewModel) { eventId in
+                    pendingEventNavigation = eventId
+                    showingInboxSheet = false
+                }
             }
             .sheet(isPresented: $showingProfileSheet) {
                 ProfileView()

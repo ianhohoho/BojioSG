@@ -202,27 +202,27 @@ class TestApproveParticipant:
 
     def test_approve_full_event_fails(self, client, seed_users, seed_events):
         """When event is at capacity, approving another pending user should fail."""
-        # Create a tiny event with max=1
+        # Create a tiny event with max=2 (organizer auto-takes 1 spot)
         token_bob = login(client, "bob")
         event_data = {
             "title": "Tiny Event",
-            "description": "Only 1 spot",
+            "description": "Only 1 extra spot",
             "sport_type": "pickleball",
             "location": "Test",
             "date_time": "2026-04-01T10:00:00",
             "price": 5.0,
-            "max_participants": 1,
+            "max_participants": 2,
         }
         r = client.post("/events", json=event_data, headers=auth_header(token_bob))
         tiny_id = r.json()["id"]
 
-        # Both alice and charlie join (pending) while event has 0 approved
+        # Both alice and charlie join (pending) while event has 1 approved (organizer)
         alice_token = login(client, "alice")
         charlie_token = login(client, "charlie")
         client.post(f"/events/{tiny_id}/join", headers=auth_header(alice_token))
         client.post(f"/events/{tiny_id}/join", headers=auth_header(charlie_token))
 
-        # Bob approves alice — now at capacity
+        # Bob approves alice — now at capacity (organizer + alice = 2)
         alice_id = seed_users["alice"].id
         r = client.put(
             f"/events/{tiny_id}/participants/{alice_id}/approve",

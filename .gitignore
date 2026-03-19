@@ -57,6 +57,9 @@ env/
 .vscode/
 *.code-workspace
 
+# Flyway
+backend/report.*
+
 # Misc
 *.log
 .claude/

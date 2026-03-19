@@ -5,13 +5,15 @@ BojioSG is an iOS app for discovering and joining paid events, starting with spo
 
 ## Architecture
 - **Frontend:** SwiftUI iOS app (iOS 17+), MVVM pattern
-- **Backend:** Python FastAPI + SQLite
+- **Backend:** Python FastAPI + Supabase PostgreSQL (SQLite for local dev/tests)
 - **Auth:** JWT-based (username/password)
+- **Migrations:** Flyway (baseline V1, SQL-based versioned migrations)
 
 ## Tech Stack
 - **iOS:** SwiftUI, Swift 5.9+, async/await, Codable
 - **Backend:** FastAPI, SQLAlchemy, Pydantic, passlib (bcrypt), python-jose (JWT)
-- **Database:** SQLite (via SQLAlchemy)
+- **Database:** Supabase PostgreSQL (production), SQLite (local dev/tests)
+- **Migrations:** Flyway CLI (`backend/flyway.toml`, `backend/sql/migrations/`)
 - **Project Generation:** XcodeGen (`project.yml`)
 
 ## iOS Project Structure
@@ -46,6 +48,16 @@ python main.py
 ```bash
 cd backend
 python seed.py
+```
+
+### Database Migrations (Flyway)
+```bash
+cd backend
+# Run pending migrations against Supabase
+./flyway.sh migrate
+# Check migration status
+./flyway.sh info
+# New migration: create backend/sql/migrations/V<N>__<description>.sql, then run migrate
 ```
 
 ### iOS App

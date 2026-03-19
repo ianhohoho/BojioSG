@@ -59,6 +59,7 @@ class EventCreate(BaseModel):
 class ParticipantResponse(BaseModel):
     id: int
     username: str
+    phone_number: str | None = None
     status: str
     joined_at: datetime
 

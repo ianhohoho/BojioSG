@@ -34,6 +34,7 @@ def _event_to_response(event: Event, current_user: User | None = None) -> EventR
                 ParticipantResponse(
                     id=p.user.id,
                     username=p.user.nickname or p.user.username,
+                    phone_number=p.user.phone_number,
                     status=p.status,
                     joined_at=p.joined_at,
                 )
@@ -122,6 +123,14 @@ def create_event(
         organizer_id=current_user.id,
     )
     db.add(event)
+    db.flush()
+
+    organizer_participant = EventParticipant(
+        event_id=event.id,
+        user_id=current_user.id,
+        status="approved",
+    )
+    db.add(organizer_participant)
     db.commit()
     db.refresh(event)
     return _event_to_response(event, current_user)
@@ -183,6 +192,15 @@ def join_event(
         status="pending",
     )
     db.add(participant)
+
+    requester_name = current_user.nickname or current_user.username
+    notification = Notification(
+        user_id=event.organizer_id,
+        event_id=event_id,
+        type="join_request",
+        message=f"{requester_name} requested to join '{event.title}'",
+    )
+    db.add(notification)
     db.commit()
 
     return JoinResponse(
@@ -298,11 +316,17 @@ def remove_participant(
         )
 
     reason = body.reason if body else None
+    if participation.status == "pending":
+        notif_type = "rejected"
+        notif_message = f"Your request to join '{event.title}' was declined"
+    else:
+        notif_type = "removed"
+        notif_message = f"You were removed from '{event.title}'"
     notification = Notification(
         user_id=user_id,
         event_id=event_id,
-        type="removed",
-        message=f"You were removed from '{event.title}'",
+        type=notif_type,
+        message=notif_message,
         reason=reason,
     )
     db.add(notification)

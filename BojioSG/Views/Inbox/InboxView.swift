@@ -4,6 +4,7 @@ struct InboxView: View {
     @Environment(AuthService.self) private var authService
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: NotificationViewModel
+    var onNavigateToEvent: ((Int) -> Void)?
 
     var body: some View {
         NavigationStack {
@@ -27,6 +28,7 @@ struct InboxView: View {
                                             )
                                         }
                                     }
+                                    onNavigateToEvent?(notification.eventId)
                                 }
                             }
                         }
@@ -88,6 +90,11 @@ private struct NotificationRow: View {
                 }
 
                 Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .padding(.top, 6)
             }
             .padding(14)
             .background(

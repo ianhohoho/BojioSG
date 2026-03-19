@@ -128,9 +128,16 @@ struct EventDetailView: View {
                                                 .font(.title3)
                                                 .foregroundStyle(.orange)
 
-                                            Text(participant.username)
-                                                .font(.subheadline)
-                                                .fontWeight(.medium)
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(participant.username)
+                                                    .font(.subheadline)
+                                                    .fontWeight(.medium)
+                                                if let phone = participant.phoneNumber {
+                                                    Text(phone)
+                                                        .font(.caption)
+                                                        .foregroundStyle(.secondary)
+                                                }
+                                            }
 
                                             Spacer()
 
@@ -220,9 +227,16 @@ struct EventDetailView: View {
                                                 .font(.title3)
                                                 .foregroundStyle(.secondary)
 
-                                            Text(participant.username)
-                                                .font(.subheadline)
-                                                .fontWeight(.medium)
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(participant.username)
+                                                    .font(.subheadline)
+                                                    .fontWeight(.medium)
+                                                if let phone = participant.phoneNumber {
+                                                    Text(phone)
+                                                        .font(.caption)
+                                                        .foregroundStyle(.secondary)
+                                                }
+                                            }
 
                                             Spacer()
                                         }

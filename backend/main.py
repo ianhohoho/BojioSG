@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import Base, engine
+from database import Base, engine, SQLALCHEMY_DATABASE_URL
 from routers import auth_router, events_router, notifications_router
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Only auto-create tables for local SQLite; Supabase tables managed via migrations
+if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="BojioSG API", version="1.0.0")
 

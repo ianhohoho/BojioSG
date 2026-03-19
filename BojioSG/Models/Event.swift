@@ -4,11 +4,13 @@ import SwiftUI
 struct Participant: Codable, Identifiable {
     let id: Int
     let username: String
+    let phoneNumber: String?
     let status: String
     let joinedAt: String
 
     enum CodingKeys: String, CodingKey {
         case id, username, status
+        case phoneNumber = "phone_number"
         case joinedAt = "joined_at"
     }
 }

@@ -154,13 +154,15 @@ print(f"Seeded {created_count} events (skipped {len(sample_events) - created_cou
 
 # Seed participants
 participant_assignments = [
-    ("Weekend Pickleball Doubles", [alice, bob, charlie]),
-    ("Competitive Badminton Singles", [alice, diana]),
-    ("Friday Night Badminton", [bob, charlie, diana]),
-    ("Beginner Pickleball Workshop", [bob, diana]),
-    ("Sunday Tennis Social", [admin, bob, charlie, diana]),
-    ("3v3 Basketball Pickup", [alice, charlie, diana]),
-    ("Weeknight Tennis Drills", [bob, charlie]),
+    ("Weekend Pickleball Doubles", [admin, alice, bob, charlie]),
+    ("Competitive Badminton Singles", [admin, alice, diana]),
+    ("Friday Night Badminton", [admin, bob, charlie, diana]),
+    ("Beginner Pickleball Workshop", [admin, bob, diana]),
+    ("Pickleball Tournament - Round Robin", [admin]),
+    ("Lunchtime Badminton Session", [admin]),
+    ("Sunday Tennis Social", [alice, admin, bob, charlie, diana]),
+    ("3v3 Basketball Pickup", [bob, alice, charlie, diana]),
+    ("Weeknight Tennis Drills", [alice, bob, charlie]),
 ]
 
 participant_count = 0

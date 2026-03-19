@@ -14,10 +14,21 @@
 - Use `HTTPBearer` security scheme with `Depends(get_current_user)` for protected routes.
 
 ## Database
-- SQLite via SQLAlchemy (file: `backend/bojiosg.db`).
+- Production: Supabase PostgreSQL (connection via env vars in `backend/.env`).
+- Local dev/tests: SQLite (`backend/bojiosg.db` / in-memory).
+- `database.py` auto-selects based on whether `DB_*` env vars are set.
 - Models define relationships with `relationship()`.
 - Use `Column`, `ForeignKey`, standard SQLAlchemy patterns.
 - Seed data via `backend/seed.py`.
+
+## Database Migrations (Flyway)
+- Flyway manages schema changes on Supabase PostgreSQL.
+- Config: `backend/flyway.toml`. Migrations: `backend/sql/migrations/`.
+- Wrapper script: `backend/flyway.sh` (loads `.env` before running Flyway).
+- V1 is the baseline (initial 4 tables, already applied).
+- Workflow: create `V<N>__<description>.sql`, run `./flyway.sh migrate`, update `models.py` to match.
+- `cleanDisabled = true` — prevents accidental `flyway clean` on production.
+- JDBC URL uses `prepareThreshold=0` for Supabase PgBouncer compatibility.
 
 ## Project Structure
 ```
@@ -28,10 +39,15 @@ backend/
 ├── schemas.py         # Pydantic request/response schemas
 ├── auth.py            # Password hashing, JWT creation/verification
 ├── seed.py            # Sample data seeder
-└── routers/
-    ├── auth_router.py          # /auth/register, /auth/login, /auth/me (profile)
-    ├── events_router.py        # CRUD /events, join/approve/remove/leave
-    └── notifications_router.py # /notifications list + mark read
+├── flyway.toml        # Flyway config (Supabase connection)
+├── flyway.sh          # Wrapper script (loads .env, runs flyway)
+├── sql/migrations/    # Flyway SQL migrations (V1__, V2__, ...)
+├── .env               # DB credentials (not committed)
+├── routers/
+│   ├── auth_router.py          # /auth/register, /auth/login, /auth/me (profile)
+│   ├── events_router.py        # CRUD /events, join/approve/remove/leave
+│   └── notifications_router.py # /notifications list + mark read
+└── tests/             # pytest tests (in-memory SQLite)
 ```
 
 ## User Profile
@@ -60,4 +76,5 @@ backend/
 - `Notification` model: `id, user_id (FK), event_id (FK), type, message, reason, is_read (Boolean), created_at`.
 - Created automatically when an organizer removes a participant (type=`"removed"`).
 - `reason` is optional — passed via `RemoveParticipantRequest` body on the DELETE endpoint.
+- Approval also creates a notification (type=`"approved"`, no reason field).
 ```
