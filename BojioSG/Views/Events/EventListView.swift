@@ -41,7 +41,7 @@ struct EventListView: View {
         case .organised:
             events = viewModel.events.filter { $0.isOrganizer == true }
         case .joined:
-            events = viewModel.events.filter { $0.isJoinedOrPending }
+            events = viewModel.events.filter { $0.isJoinedOrPending && $0.isOrganizer != true }
         }
         if let sport = selectedSport {
             events = events.filter { $0.sportType.lowercased() == sport.lowercased() }
@@ -132,6 +132,29 @@ struct EventListView: View {
                             // Sport type filter
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            selectedSport = nil
+                                        }
+                                    } label: {
+                                        HStack(spacing: 6) {
+                                            Image(systemName: "sportscourt")
+                                                .font(.caption)
+                                            Text("All Types")
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                        }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(selectedSport == nil ? Color.accentColor.opacity(0.15) : Color.gray.opacity(0.08))
+                                        .foregroundStyle(selectedSport == nil ? Color.accentColor : .secondary)
+                                        .clipShape(Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .strokeBorder(selectedSport == nil ? Color.accentColor.opacity(0.3) : .clear, lineWidth: 1)
+                                        )
+                                    }
+
                                     ForEach(Self.sportTypes, id: \.0) { name, icon, color in
                                         let isSelected = selectedSport == name
                                         Button {

@@ -7,14 +7,18 @@ struct EventRowView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Sport badge + status badges + price
             HStack {
-                Label(event.sportType.capitalized, systemImage: event.sportIcon)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(event.sportColor.opacity(0.12))
-                    .foregroundStyle(event.sportColor)
-                    .clipShape(Capsule())
+                HStack(spacing: 6) {
+                    Image(systemName: event.sportIcon)
+                        .font(.caption)
+                    Text(event.sportType.capitalized)
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(event.sportColor.opacity(0.12))
+                .foregroundStyle(event.sportColor)
+                .clipShape(Capsule())
 
                 if event.isOrganizer == true {
                     HStack(spacing: 4) {
