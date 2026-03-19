@@ -33,7 +33,12 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.refresh(user)
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        user_id=user.id,
+        username=user.username,
+    )
 
 
 @router.post("/login", response_model=Token)
@@ -46,4 +51,9 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
         )
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        user_id=user.id,
+        username=user.username,
+    )

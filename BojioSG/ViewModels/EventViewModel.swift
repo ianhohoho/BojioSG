@@ -70,7 +70,62 @@ final class EventViewModel {
                 token: token
             )
             joinMessage = response.message
-            // Refresh events to update participant counts
+            await fetchEvents(token: token)
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func approveParticipant(eventId: Int, userId: Int, token: String?) async {
+        guard let token else { return }
+        errorMessage = nil
+
+        do {
+            let _: ParticipantActionResponse = try await apiClient.request(
+                path: "/events/\(eventId)/participants/\(userId)/approve",
+                method: "PUT",
+                token: token
+            )
+            await fetchEvents(token: token)
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func removeParticipant(eventId: Int, userId: Int, token: String?) async {
+        guard let token else { return }
+        errorMessage = nil
+
+        do {
+            let _: ParticipantActionResponse = try await apiClient.request(
+                path: "/events/\(eventId)/participants/\(userId)",
+                method: "DELETE",
+                token: token
+            )
+            await fetchEvents(token: token)
+        } catch let error as APIError {
+            errorMessage = error.errorDescription
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func leaveEvent(eventId: Int, token: String?) async {
+        guard let token else { return }
+        errorMessage = nil
+        joinMessage = nil
+
+        do {
+            let response: ParticipantActionResponse = try await apiClient.request(
+                path: "/events/\(eventId)/leave",
+                method: "DELETE",
+                token: token
+            )
+            joinMessage = response.message
             await fetchEvents(token: token)
         } catch let error as APIError {
             errorMessage = error.errorDescription

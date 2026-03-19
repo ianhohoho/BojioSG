@@ -25,7 +25,11 @@ final class AuthViewModel {
                 method: "POST",
                 body: request
             )
-            authService.setToken(response.accessToken)
+            authService.setAuth(
+                token: response.accessToken,
+                userId: response.userId,
+                username: response.username
+            )
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {
@@ -56,7 +60,11 @@ final class AuthViewModel {
                 method: "POST",
                 body: request
             )
-            authService.setToken(response.accessToken)
+            authService.setAuth(
+                token: response.accessToken,
+                userId: response.userId,
+                username: response.username
+            )
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {

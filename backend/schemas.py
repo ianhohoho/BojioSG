@@ -25,6 +25,8 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_id: int
+    username: str
 
 
 # Event schemas
@@ -38,6 +40,15 @@ class EventCreate(BaseModel):
     max_participants: int
 
 
+class ParticipantResponse(BaseModel):
+    id: int
+    username: str
+    status: str
+    joined_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 class EventResponse(BaseModel):
     id: int
     title: str
@@ -49,10 +60,19 @@ class EventResponse(BaseModel):
     max_participants: int
     current_participants: int
     organizer_id: int
+    organizer_username: str
+    is_organizer: bool | None = None
+    join_status: str | None = None
+    participants: list[ParticipantResponse] | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
 
 
 class JoinResponse(BaseModel):
+    message: str
+    status: str
+
+
+class ParticipantActionResponse(BaseModel):
     message: str

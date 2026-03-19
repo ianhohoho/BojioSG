@@ -5,7 +5,7 @@ struct EventRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Sport badge + price
+            // Sport badge + status badges + price
             HStack {
                 Label(event.sportType.capitalized, systemImage: event.sportIcon)
                     .font(.caption)
@@ -15,6 +15,47 @@ struct EventRowView: View {
                     .background(event.sportColor.opacity(0.12))
                     .foregroundStyle(event.sportColor)
                     .clipShape(Capsule())
+
+                if event.isOrganizer == true {
+                    HStack(spacing: 4) {
+                        Text("Your event")
+                        if event.pendingCount > 0 {
+                            Text("\(event.pendingCount)")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 1)
+                                .background(.orange)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(Color.indigo.opacity(0.12))
+                    .foregroundStyle(.indigo)
+                    .clipShape(Capsule())
+                } else if event.isApproved {
+                    Text("Joined")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.green.opacity(0.12))
+                        .foregroundStyle(.green)
+                        .clipShape(Capsule())
+                } else if event.isPending {
+                    Text("Pending")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.orange.opacity(0.12))
+                        .foregroundStyle(.orange)
+                        .clipShape(Capsule())
+                }
 
                 Spacer()
 

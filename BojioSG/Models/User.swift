@@ -25,9 +25,13 @@ struct RegisterRequest: Codable {
 struct AuthResponse: Codable {
     let accessToken: String
     let tokenType: String
+    let userId: Int
+    let username: String
 
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case tokenType = "token_type"
+        case userId = "user_id"
+        case username
     }
 }

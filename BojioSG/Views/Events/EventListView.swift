@@ -1,9 +1,48 @@
 import SwiftUI
 
+enum EventFilter: String, CaseIterable {
+    case all = "All"
+    case organised = "Organised"
+    case joined = "Joined"
+    case pending = "Pending"
+}
+
 struct EventListView: View {
     @Environment(AuthService.self) private var authService
     @State private var viewModel = EventViewModel()
     @State private var showingCreateSheet = false
+    @State private var filter: EventFilter = .all
+
+    private var filteredEvents: [Event] {
+        switch filter {
+        case .all:
+            return viewModel.events
+        case .organised:
+            return viewModel.events.filter { $0.isOrganizer == true }
+        case .joined:
+            return viewModel.events.filter { $0.isApproved }
+        case .pending:
+            return viewModel.events.filter { $0.isPending }
+        }
+    }
+
+    private var emptyStateIcon: String {
+        switch filter {
+        case .all: return "calendar.badge.exclamationmark"
+        case .organised: return "star"
+        case .joined: return "person.2"
+        case .pending: return "clock"
+        }
+    }
+
+    private var emptyStateMessage: String {
+        switch filter {
+        case .all: return "No events available right now."
+        case .organised: return "You haven't organised any events yet."
+        case .joined: return "You haven't joined any events yet."
+        case .pending: return "You have no pending requests."
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -32,17 +71,49 @@ struct EventListView: View {
                     )
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(viewModel.events) { event in
-                                NavigationLink(value: event.id) {
-                                    EventRowView(event: event)
+                        // Filter pills
+                        HStack(spacing: 10) {
+                            ForEach(EventFilter.allCases, id: \.self) { option in
+                                Button {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        filter = option
+                                    }
+                                } label: {
+                                    Text(option.rawValue)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(filter == option ? Color.accentColor : Color.gray.opacity(0.12))
+                                        .foregroundStyle(filter == option ? .white : .primary)
+                                        .clipShape(Capsule())
                                 }
-                                .buttonStyle(.plain)
                             }
+                            Spacer()
                         }
                         .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                        .padding(.bottom, 20)
+                        .padding(.top, 4)
+
+                        if filteredEvents.isEmpty {
+                            ContentUnavailableView(
+                                "No \(filter.rawValue) Events",
+                                systemImage: emptyStateIcon,
+                                description: Text(emptyStateMessage)
+                            )
+                            .padding(.top, 40)
+                        } else {
+                            LazyVStack(spacing: 12) {
+                                ForEach(filteredEvents) { event in
+                                    NavigationLink(value: event.id) {
+                                        EventRowView(event: event)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.top, 8)
+                            .padding(.bottom, 20)
+                        }
                     }
                     .refreshable {
                         await viewModel.fetchEvents(token: authService.token)
@@ -51,9 +122,7 @@ struct EventListView: View {
             }
             .navigationTitle("Events")
             .navigationDestination(for: Int.self) { eventId in
-                if let event = viewModel.events.first(where: { $0.id == eventId }) {
-                    EventDetailView(event: event, viewModel: viewModel)
-                }
+                EventDetailView(eventId: eventId, viewModel: viewModel)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

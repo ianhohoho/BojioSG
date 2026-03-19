@@ -1,15 +1,44 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
-from auth import get_current_user
+from auth import get_current_user, get_optional_user
 from database import get_db
 from models import Event, EventParticipant, User
-from schemas import EventCreate, EventResponse, JoinResponse
+from schemas import (
+    EventCreate,
+    EventResponse,
+    JoinResponse,
+    ParticipantActionResponse,
+    ParticipantResponse,
+)
 
 router = APIRouter(prefix="/events", tags=["events"])
 
 
-def _event_to_response(event: Event) -> EventResponse:
+def _event_to_response(event: Event, current_user: User | None = None) -> EventResponse:
+    is_organizer = None
+    join_status = None
+    participants = None
+
+    approved_count = sum(1 for p in event.participants if p.status == "approved")
+
+    if current_user is not None:
+        is_organizer = event.organizer_id == current_user.id
+        user_participation = next(
+            (p for p in event.participants if p.user_id == current_user.id), None
+        )
+        join_status = user_participation.status if user_participation else None
+        if is_organizer:
+            participants = [
+                ParticipantResponse(
+                    id=p.user.id,
+                    username=p.user.username,
+                    status=p.status,
+                    joined_at=p.joined_at,
+                )
+                for p in event.participants
+            ]
+
     return EventResponse(
         id=event.id,
         title=event.title,
@@ -19,27 +48,59 @@ def _event_to_response(event: Event) -> EventResponse:
         date_time=event.date_time,
         price=event.price,
         max_participants=event.max_participants,
-        current_participants=len(event.participants),
+        current_participants=approved_count,
         organizer_id=event.organizer_id,
+        organizer_username=event.organizer.username,
+        is_organizer=is_organizer,
+        join_status=join_status,
+        participants=participants,
         created_at=event.created_at,
     )
 
 
-@router.get("", response_model=list[EventResponse])
-def list_events(db: Session = Depends(get_db)):
-    events = db.query(Event).order_by(Event.date_time).all()
-    return [_event_to_response(e) for e in events]
-
-
-@router.get("/{event_id}", response_model=EventResponse)
-def get_event(event_id: int, db: Session = Depends(get_db)):
-    event = db.query(Event).filter(Event.id == event_id).first()
+def _get_event_or_404(db: Session, event_id: int) -> Event:
+    event = (
+        db.query(Event)
+        .options(
+            joinedload(Event.organizer),
+            joinedload(Event.participants).joinedload(EventParticipant.user),
+        )
+        .filter(Event.id == event_id)
+        .first()
+    )
     if not event:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Event not found",
         )
-    return _event_to_response(event)
+    return event
+
+
+@router.get("", response_model=list[EventResponse])
+def list_events(
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
+):
+    events = (
+        db.query(Event)
+        .options(
+            joinedload(Event.organizer),
+            joinedload(Event.participants).joinedload(EventParticipant.user),
+        )
+        .order_by(Event.date_time)
+        .all()
+    )
+    return [_event_to_response(e, current_user) for e in events]
+
+
+@router.get("/{event_id}", response_model=EventResponse)
+def get_event(
+    event_id: int,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
+):
+    event = _get_event_or_404(db, event_id)
+    return _event_to_response(event, current_user)
 
 
 @router.post("", response_model=EventResponse, status_code=status.HTTP_201_CREATED)
@@ -61,7 +122,7 @@ def create_event(
     db.add(event)
     db.commit()
     db.refresh(event)
-    return _event_to_response(event)
+    return _event_to_response(event, current_user)
 
 
 @router.post("/{event_id}/join", response_model=JoinResponse)
@@ -77,7 +138,14 @@ def join_event(
             detail="Event not found",
         )
 
-    # Check if already joined
+    # Organizer cannot join their own event
+    if event.organizer_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Organizers cannot join their own event",
+        )
+
+    # Check if already joined or pending
     existing = (
         db.query(EventParticipant)
         .filter(
@@ -89,16 +157,19 @@ def join_event(
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You have already joined this event",
+            detail="You have already requested to join this event",
         )
 
-    # Check capacity
-    participant_count = (
+    # Check capacity (only approved count toward capacity)
+    approved_count = (
         db.query(EventParticipant)
-        .filter(EventParticipant.event_id == event_id)
+        .filter(
+            EventParticipant.event_id == event_id,
+            EventParticipant.status == "approved",
+        )
         .count()
     )
-    if participant_count >= event.max_participants:
+    if approved_count >= event.max_participants:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="This event is full",
@@ -107,8 +178,149 @@ def join_event(
     participant = EventParticipant(
         event_id=event_id,
         user_id=current_user.id,
+        status="pending",
     )
     db.add(participant)
     db.commit()
 
-    return JoinResponse(message="Successfully joined the event!")
+    return JoinResponse(
+        message="Your request to join has been submitted. Waiting for organizer approval.",
+        status="pending",
+    )
+
+
+@router.put(
+    "/{event_id}/participants/{user_id}/approve",
+    response_model=ParticipantActionResponse,
+)
+def approve_participant(
+    event_id: int,
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found",
+        )
+    if event.organizer_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the organizer can approve participants",
+        )
+
+    participation = (
+        db.query(EventParticipant)
+        .filter(
+            EventParticipant.event_id == event_id,
+            EventParticipant.user_id == user_id,
+        )
+        .first()
+    )
+    if not participation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Participant not found",
+        )
+    if participation.status == "approved":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Participant is already approved",
+        )
+
+    # Re-check capacity before approving
+    approved_count = (
+        db.query(EventParticipant)
+        .filter(
+            EventParticipant.event_id == event_id,
+            EventParticipant.status == "approved",
+        )
+        .count()
+    )
+    if approved_count >= event.max_participants:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This event is full",
+        )
+
+    participation.status = "approved"
+    db.commit()
+
+    return ParticipantActionResponse(message="Participant approved")
+
+
+@router.delete(
+    "/{event_id}/participants/{user_id}",
+    response_model=ParticipantActionResponse,
+)
+def remove_participant(
+    event_id: int,
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found",
+        )
+    if event.organizer_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the organizer can remove participants",
+        )
+
+    participation = (
+        db.query(EventParticipant)
+        .filter(
+            EventParticipant.event_id == event_id,
+            EventParticipant.user_id == user_id,
+        )
+        .first()
+    )
+    if not participation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Participant not found",
+        )
+
+    db.delete(participation)
+    db.commit()
+
+    return ParticipantActionResponse(message="Participant removed")
+
+
+@router.delete("/{event_id}/leave", response_model=ParticipantActionResponse)
+def leave_event(
+    event_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found",
+        )
+
+    participation = (
+        db.query(EventParticipant)
+        .filter(
+            EventParticipant.event_id == event_id,
+            EventParticipant.user_id == current_user.id,
+        )
+        .first()
+    )
+    if not participation:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You are not a participant of this event",
+        )
+
+    db.delete(participation)
+    db.commit()
+
+    return ParticipantActionResponse(message="You have left the event")

@@ -60,3 +60,4 @@ env/
 # Misc
 *.log
 .claude/
+.mcp.json
