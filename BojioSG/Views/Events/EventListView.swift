@@ -104,120 +104,126 @@ struct EventListView: View {
                         description: Text("No events available right now.\nCheck back later!")
                     )
                 } else {
-                    ScrollView {
-                        // Filter pills
-                        HStack(spacing: 10) {
-                            ForEach(EventFilter.allCases, id: \.self) { option in
-                                Button {
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        filter = option
-                                    }
-                                } label: {
-                                    Text(option.rawValue)
-                                        .font(.subheadline)
-                                        .fontWeight(.semibold)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(filter == option ? Color.accentColor : Color.gray.opacity(0.12))
-                                        .foregroundStyle(filter == option ? .white : .primary)
-                                        .clipShape(Capsule())
-                                }
-                            }
-                            Spacer()
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 4)
-
-                        // Sport type filter
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(Self.sportTypes, id: \.0) { name, icon, color in
-                                    let isSelected = selectedSport == name
+                    VStack(spacing: 0) {
+                        // Filter pills (pinned above scrollable content)
+                        VStack(spacing: 2) {
+                            HStack(spacing: 10) {
+                                ForEach(EventFilter.allCases, id: \.self) { option in
                                     Button {
                                         withAnimation(.easeInOut(duration: 0.2)) {
-                                            selectedSport = isSelected ? nil : name
+                                            filter = option
                                         }
                                     } label: {
-                                        HStack(spacing: 6) {
-                                            Image(systemName: icon)
-                                                .font(.caption)
-                                            Text(name)
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                        }
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(isSelected ? color.opacity(0.15) : Color.gray.opacity(0.08))
-                                        .foregroundStyle(isSelected ? color : .secondary)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule()
-                                                .strokeBorder(isSelected ? color.opacity(0.3) : .clear, lineWidth: 1)
-                                        )
+                                        Text(option.rawValue)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 8)
+                                            .background(filter == option ? Color.accentColor : Color.gray.opacity(0.12))
+                                            .foregroundStyle(filter == option ? .white : .primary)
+                                            .clipShape(Capsule())
                                     }
                                 }
+                                Spacer()
                             }
                             .padding(.horizontal, 16)
-                        }
-                        .padding(.top, 2)
+                            .padding(.top, 4)
 
-                        // Time filter
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(TimeFilter.allCases, id: \.self) { option in
-                                    let isSelected = timeFilter == option
-                                    Button {
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            timeFilter = option
+                            // Sport type filter
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(Self.sportTypes, id: \.0) { name, icon, color in
+                                        let isSelected = selectedSport == name
+                                        Button {
+                                            withAnimation(.easeInOut(duration: 0.2)) {
+                                                selectedSport = isSelected ? nil : name
+                                            }
+                                        } label: {
+                                            HStack(spacing: 6) {
+                                                Image(systemName: icon)
+                                                    .font(.caption)
+                                                Text(name)
+                                                    .font(.caption)
+                                                    .fontWeight(.medium)
+                                            }
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(isSelected ? color.opacity(0.15) : Color.gray.opacity(0.08))
+                                            .foregroundStyle(isSelected ? color : .secondary)
+                                            .clipShape(Capsule())
+                                            .overlay(
+                                                Capsule()
+                                                    .strokeBorder(isSelected ? color.opacity(0.3) : .clear, lineWidth: 1)
+                                            )
                                         }
-                                    } label: {
-                                        HStack(spacing: 6) {
-                                            Image(systemName: option == .all ? "clock" : "calendar")
-                                                .font(.caption)
-                                            Text(option.rawValue)
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                        }
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(isSelected ? Color.purple.opacity(0.15) : Color.gray.opacity(0.08))
-                                        .foregroundStyle(isSelected ? .purple : .secondary)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule()
-                                                .strokeBorder(isSelected ? Color.purple.opacity(0.3) : .clear, lineWidth: 1)
-                                        )
                                     }
                                 }
+                                .padding(.horizontal, 16)
                             }
-                            .padding(.horizontal, 16)
-                        }
-                        .padding(.top, 2)
+                            .padding(.top, 2)
 
-                        if filteredEvents.isEmpty {
-                            ContentUnavailableView(
-                                "No \(filter.rawValue) Events",
-                                systemImage: emptyStateIcon,
-                                description: Text(emptyStateMessage)
-                            )
-                            .padding(.top, 40)
-                        } else {
-                            LazyVStack(spacing: 12) {
+                            // Time filter
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(TimeFilter.allCases, id: \.self) { option in
+                                        let isSelected = timeFilter == option
+                                        Button {
+                                            withAnimation(.easeInOut(duration: 0.2)) {
+                                                timeFilter = option
+                                            }
+                                        } label: {
+                                            HStack(spacing: 6) {
+                                                Image(systemName: option == .all ? "clock" : "calendar")
+                                                    .font(.caption)
+                                                Text(option.rawValue)
+                                                    .font(.caption)
+                                                    .fontWeight(.medium)
+                                            }
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(isSelected ? Color.purple.opacity(0.15) : Color.gray.opacity(0.08))
+                                            .foregroundStyle(isSelected ? .purple : .secondary)
+                                            .clipShape(Capsule())
+                                            .overlay(
+                                                Capsule()
+                                                    .strokeBorder(isSelected ? Color.purple.opacity(0.3) : .clear, lineWidth: 1)
+                                            )
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal, 16)
+                            }
+                            .padding(.top, 2)
+                        }
+                        .padding(.bottom, 8)
+
+                        List {
+                            if filteredEvents.isEmpty {
+                                ContentUnavailableView(
+                                    "No \(filter.rawValue) Events",
+                                    systemImage: emptyStateIcon,
+                                    description: Text(emptyStateMessage)
+                                )
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets())
+                                .listRowBackground(Color.clear)
+                                .padding(.top, 40)
+                            } else {
                                 ForEach(filteredEvents) { event in
                                     NavigationLink(value: event.id) {
                                         EventRowView(event: event)
                                     }
-                                    .buttonStyle(.plain)
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                                    .listRowBackground(Color.clear)
                                 }
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.top, 8)
-                            .padding(.bottom, 20)
                         }
-                    }
-                    .refreshable {
-                        await viewModel.fetchEvents(token: authService.token)
-                        await notificationViewModel.fetchNotifications(token: authService.token)
+                        .listStyle(.plain)
+                        .refreshable {
+                            await viewModel.fetchEvents(token: authService.token)
+                            await notificationViewModel.fetchNotifications(token: authService.token)
+                        }
                     }
                 }
             }
@@ -275,11 +281,12 @@ struct EventListView: View {
             }
             .sheet(isPresented: $showingInboxSheet, onDismiss: {
                 Task {
+                    await viewModel.fetchEvents(token: authService.token)
                     await notificationViewModel.fetchNotifications(token: authService.token)
-                }
-                if let eventId = pendingEventNavigation {
-                    pendingEventNavigation = nil
-                    navigationPath.append(eventId)
+                    if let eventId = pendingEventNavigation {
+                        pendingEventNavigation = nil
+                        navigationPath.append(eventId)
+                    }
                 }
             }) {
                 InboxView(viewModel: notificationViewModel) { eventId in

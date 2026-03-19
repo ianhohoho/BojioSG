@@ -9,6 +9,8 @@ struct EventDetailView: View {
     @State private var showRemoveConfirmation = false
     @State private var removeTargetParticipant: Participant?
     @State private var removeReason = ""
+    @State private var showApprovalAlert = false
+    @State private var approvedParticipantName = ""
 
     private var event: Event? {
         viewModel.events.first(where: { $0.id == eventId })
@@ -144,11 +146,16 @@ struct EventDetailView: View {
 
                                             Button {
                                                 Task {
+                                                    let name = participant.username
                                                     await viewModel.approveParticipant(
                                                         eventId: event.id,
                                                         userId: participant.id,
                                                         token: authService.token
                                                     )
+                                                    if viewModel.errorMessage == nil {
+                                                        approvedParticipantName = name
+                                                        showApprovalAlert = true
+                                                    }
                                                 }
                                             } label: {
                                                 Image(systemName: "checkmark.circle.fill")
@@ -157,13 +164,9 @@ struct EventDetailView: View {
                                             }
 
                                             Button {
-                                                Task {
-                                                    await viewModel.removeParticipant(
-                                                        eventId: event.id,
-                                                        userId: participant.id,
-                                                        token: authService.token
-                                                    )
-                                                }
+                                                removeTargetParticipant = participant
+                                                removeReason = ""
+                                                showRemoveConfirmation = true
                                             } label: {
                                                 Image(systemName: "xmark.circle.fill")
                                                     .font(.title2)
@@ -235,9 +238,14 @@ struct EventDetailView: View {
                                                     )
                                                 }
                                             } label: {
-                                                Image(systemName: "dollarsign.circle.fill")
-                                                    .font(.title2)
-                                                    .foregroundStyle(.green)
+                                                Text("Confirm")
+                                                    .font(.caption)
+                                                    .fontWeight(.semibold)
+                                                    .foregroundStyle(.white)
+                                                    .padding(.horizontal, 12)
+                                                    .padding(.vertical, 6)
+                                                    .background(.green)
+                                                    .clipShape(Capsule())
                                             }
 
                                             Button {
@@ -592,8 +600,16 @@ struct EventDetailView: View {
                 }
             }
         }
+        .refreshable {
+            await viewModel.fetchEvents(token: authService.token)
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            viewModel.joinMessage = nil
+            viewModel.errorMessage = nil
+            await viewModel.fetchEvents(token: authService.token)
+        }
         .animation(.easeInOut(duration: 0.2), value: viewModel.joinMessage)
         .animation(.easeInOut(duration: 0.2), value: viewModel.errorMessage)
         .alert("Remove Participant?", isPresented: $showRemoveConfirmation) {
@@ -619,6 +635,11 @@ struct EventDetailView: View {
             if let name = removeTargetParticipant?.username {
                 Text("Are you sure you want to remove \(name)? They will be notified.")
             }
+        }
+        .alert("Request Approved", isPresented: $showApprovalAlert) {
+            Button("OK") {}
+        } message: {
+            Text("\(approvedParticipantName) has been notified to PayNow you.")
         }
     }
 }

@@ -31,7 +31,7 @@ struct APIErrorResponse: Codable {
 final class APIClient {
     static let shared = APIClient()
 
-    #if DEBUG
+    #if targetEnvironment(simulator)
     private let baseURL = "http://localhost:8000"
     #else
     private let baseURL = "https://bojiosg-api.fly.dev"
