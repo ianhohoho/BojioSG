@@ -53,7 +53,7 @@ struct CreateEventView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             TextField("e.g. Saturday Morning Pickleball", text: $title)
-                                .textFieldStyle(.roundedBorder)
+                                .styledField()
                         }
 
                         VStack(alignment: .leading, spacing: 6) {
@@ -61,11 +61,12 @@ struct CreateEventView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             TextEditor(text: $description)
+                                .font(.body)
+                                .padding(10)
                                 .frame(minHeight: 80)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(.quaternary, lineWidth: 1)
-                                )
+                                .scrollContentBackground(.hidden)
+                                .background(Color(.systemGray6))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
 
                         VStack(alignment: .leading, spacing: 6) {
@@ -73,7 +74,7 @@ struct CreateEventView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             TextField("e.g. Clementi Sports Hall", text: $location)
-                                .textFieldStyle(.roundedBorder)
+                                .styledField()
                         }
                     }
                     .cardStyle()
@@ -103,7 +104,7 @@ struct CreateEventView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 TextField("0.00", text: $priceText)
-                                    .textFieldStyle(.roundedBorder)
+                                    .styledField()
                                     .keyboardType(.decimalPad)
                             }
 

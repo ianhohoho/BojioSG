@@ -12,6 +12,7 @@
 		1E9E5E2B25B8362C4D5E4534 /* BojioSGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422353DFA0A5420D382D5A5E /* BojioSGApp.swift */; };
 		1E9EA34978BB4E37A33B10FC /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C6D262203892327BF020D39 /* ProfileViewModel.swift */; };
 		231DB9B02F09FC0CCA9CF51F /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF056B372B300B403AB57CC1 /* EventViewModel.swift */; };
+		317276381C83EF5E96D3151C /* StyledField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FD374ADDBA6D4B7B05B5F5F /* StyledField.swift */; };
 		376CA51C7D0A64464D17C6C2 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A71DF0FE242B955664EF5E /* AuthService.swift */; };
 		3E5CE328B594C49B887838CD /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E21CE74BDA1461106145A7 /* Notification.swift */; };
 		45DCDE7CD140C96F2324282A /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B1DC4F171335ECFECCB0C77 /* Event.swift */; };
@@ -30,11 +31,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0FD374ADDBA6D4B7B05B5F5F /* StyledField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledField.swift; sourceTree = "<group>"; };
 		28E21CE74BDA1461106145A7 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		336A2924245BED77E797CF22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3F7B7EF55F6FEE68185485EA /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		422353DFA0A5420D382D5A5E /* BojioSGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojioSGApp.swift; sourceTree = "<group>"; };
-		58853872827BB3C62BFBC20C /* BojioSG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BojioSG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		58853872827BB3C62BFBC20C /* BojioSG.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BojioSG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AF38FBA2547C4313CD549F1 /* InboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxView.swift; sourceTree = "<group>"; };
 		5B3D165ACB3CF5C2EAE5F7B8 /* EventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListView.swift; sourceTree = "<group>"; };
 		5F7BBFDD8D01099E2B292615 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				7668D7B0296776C361F7E04F /* ContentView.swift */,
+				0FD374ADDBA6D4B7B05B5F5F /* StyledField.swift */,
 				DDBA24F03276770AEBF6BA49 /* Auth */,
 				852F15D41405421078C359B8 /* Events */,
 				F5E2E418CAF97A0BAFB6AAC6 /* Inbox */,
@@ -208,6 +211,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = C2C259D1200A24ED4676E449 /* Build configuration list for PBXProject "BojioSG" */;
 			developmentRegion = en;
@@ -262,6 +267,7 @@
 				6E481E7E67AACA7101537634 /* ProfileView.swift in Sources */,
 				1E9EA34978BB4E37A33B10FC /* ProfileViewModel.swift in Sources */,
 				B95E389B6B1BC33809B21080 /* RegisterView.swift in Sources */,
+				317276381C83EF5E96D3151C /* StyledField.swift in Sources */,
 				B7B5999279D809699B4BF286 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,10 +280,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = J25R9UU78W;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BojioSG/Info.plist;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
@@ -293,7 +297,6 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bojiosg.BojioSG;
 				PRODUCT_NAME = BojioSG;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -362,11 +365,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = J25R9UU78W;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BojioSG/Info.plist;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
@@ -382,7 +383,6 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bojiosg.BojioSG;
 				PRODUCT_NAME = BojioSG;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

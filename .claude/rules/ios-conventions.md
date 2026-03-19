@@ -25,4 +25,5 @@
 - Use `.contentTransition(.numericText())` for animated number changes where appropriate.
 - Sport type badges: colored capsule pills with sport-specific colors (pickleball = green, badminton = orange).
 - Keep minimum tap targets at 44pt. Generous padding (16-20pt) on screen edges.
+- Form text fields: use `.styledField()` modifier (defined in `Views/StyledField.swift`) — `.plain` style, 12pt padding, `systemGray6` fill, 12pt corner radius. For `TextEditor`, apply `.scrollContentBackground(.hidden)` + same background/clip manually.
 - Use `List` with `.listStyle(.plain)` and `.refreshable` for pull-to-refresh on card-based lists. Hide row chrome with `.listRowSeparator(.hidden)`, `.listRowBackground(Color.clear)`, custom `.listRowInsets`. Plain `ScrollView` + `.refreshable` is unreliable with nested horizontal `ScrollView`s.

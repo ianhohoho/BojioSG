@@ -29,7 +29,7 @@ struct ProfileView: View {
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                             TextField("Enter a nickname", text: $viewModel.nickname)
-                                .textFieldStyle(.roundedBorder)
+                                .styledField()
                                 .textContentType(.nickname)
                                 .autocorrectionDisabled()
                         }
@@ -40,7 +40,7 @@ struct ProfileView: View {
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                             TextField("e.g. +65 9123 4567", text: $viewModel.phoneNumber)
-                                .textFieldStyle(.roundedBorder)
+                                .styledField()
                                 .textContentType(.telephoneNumber)
                                 .keyboardType(.phonePad)
                         }
