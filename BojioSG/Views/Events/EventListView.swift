@@ -173,25 +173,27 @@ struct EventListView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    HStack(spacing: 12) {
+                    HStack(spacing: 16) {
                         Button {
                             showingInboxSheet = true
                         } label: {
-                            Image(systemName: "bell.fill")
-                                .foregroundStyle(Color.accentColor)
-                                .overlay(alignment: .topTrailing) {
-                                    if notificationViewModel.unreadCount > 0 {
-                                        Text("\(notificationViewModel.unreadCount)")
-                                            .font(.caption2)
-                                            .fontWeight(.bold)
-                                            .foregroundStyle(.white)
-                                            .padding(.horizontal, 5)
-                                            .padding(.vertical, 1)
-                                            .background(.red)
-                                            .clipShape(Capsule())
-                                            .offset(x: 8, y: -8)
-                                    }
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: "bell.fill")
+                                    .foregroundStyle(Color.accentColor)
+                                    .frame(width: 22, height: 22)
+
+                                if notificationViewModel.unreadCount > 0 {
+                                    Text("\(notificationViewModel.unreadCount)")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 4)
+                                        .padding(.vertical, 1)
+                                        .background(.red)
+                                        .clipShape(Capsule())
+                                        .offset(x: 6, y: -6)
                                 }
+                            }
+                            .frame(width: 30, height: 30)
                         }
 
                         Button {
