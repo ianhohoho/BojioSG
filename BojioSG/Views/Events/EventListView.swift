@@ -191,7 +191,7 @@ struct EventListView: View {
                             }
                             .padding(.top, 2)
 
-                            // Time filter + sort
+                            // Time filter
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     ForEach(TimeFilter.allCases, id: \.self) { option in
@@ -219,33 +219,32 @@ struct EventListView: View {
                                             )
                                         }
                                     }
-
-                                    Button {
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            sortAscending.toggle()
-                                        }
-                                    } label: {
-                                        HStack(spacing: 6) {
-                                            Image(systemName: sortAscending ? "arrow.up" : "arrow.down")
-                                                .font(.caption)
-                                            Text(sortAscending ? "Earliest" : "Latest")
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                        }
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(Color.purple.opacity(0.15))
-                                        .foregroundStyle(.purple)
-                                        .clipShape(Capsule())
-                                        .overlay(
-                                            Capsule()
-                                                .strokeBorder(Color.purple.opacity(0.3), lineWidth: 1)
-                                        )
-                                    }
                                 }
                                 .padding(.horizontal, 16)
                             }
                             .padding(.top, 2)
+
+                            // Sort order
+                            HStack {
+                                Spacer()
+                                Button {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        sortAscending.toggle()
+                                    }
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: sortAscending ? "arrow.up" : "arrow.down")
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                        Text(sortAscending ? "Earliest first" : "Latest first")
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                    }
+                                    .foregroundStyle(.secondary)
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.top, 8)
                         }
                         .padding(.bottom, 8)
 
