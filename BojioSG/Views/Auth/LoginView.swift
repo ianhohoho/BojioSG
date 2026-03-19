@@ -33,7 +33,7 @@ struct LoginView: View {
                             Text("BojioSG")
                                 .font(.system(size: 36, weight: .bold, design: .rounded))
 
-                            Text("Don't get left out!")
+                            Text("Don't say Bojio! Join fun activites near you.")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }

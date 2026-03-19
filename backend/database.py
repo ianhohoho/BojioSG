@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.pool import NullPool
 
 load_dotenv()
 
@@ -13,9 +14,11 @@ DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 
 if all([DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME]):
+    # Wrap IPv6 addresses in brackets for URL format
+    host = f"[{DB_HOST}]" if ":" in DB_HOST else DB_HOST
     SQLALCHEMY_DATABASE_URL = (
         f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}"
-        f"@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
+        f"@{host}:{DB_PORT}/{DB_NAME}?sslmode=require"
     )
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
 else:

@@ -1,6 +1,6 @@
 [environments.supabase]
-url = "jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?ssl=true&sslmode=require&prepareThreshold=0"
-user = "postgres.psnwbnvupwoousudrtuz"
+url = "jdbc:postgresql://[2406:da12:b78:de0d:bb7e:f8ef:6cc1:f90b]:5432/postgres?ssl=true&sslmode=require"
+user = "postgres"
 password = "${env.DB_PASSWORD}"
 schemas = ["public"]
 
