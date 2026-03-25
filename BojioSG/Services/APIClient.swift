@@ -38,6 +38,7 @@ final class APIClient {
     #endif
 
     private let session: URLSession
+    var onUnauthorized: (() -> Void)?
 
     init() {
         let config = URLSessionConfiguration.default
@@ -81,6 +82,9 @@ final class APIClient {
         }
 
         guard (200...299).contains(httpResponse.statusCode) else {
+            if httpResponse.statusCode == 401 || httpResponse.statusCode == 403 {
+                await MainActor.run { onUnauthorized?() }
+            }
             let message: String
             if let errorResponse = try? JSONDecoder().decode(APIErrorResponse.self, from: data) {
                 message = errorResponse.detail

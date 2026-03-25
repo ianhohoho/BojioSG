@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Loader2, ChevronLeft, ChevronRight, Users, DollarSign } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,7 +49,7 @@ export function CreateEventForm({ onSubmit, loading, error }: CreateEventFormPro
   const [hour, setHour] = useState("7");
   const [minute, setMinute] = useState("00");
   const [ampm, setAmpm] = useState("PM");
-  const [totalPrice, setTotalPrice] = useState("");
+  const [price, setPrice] = useState("");
   const [maxParticipants, setMaxParticipants] = useState("");
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -61,15 +61,6 @@ export function CreateEventForm({ onSubmit, loading, error }: CreateEventFormPro
       scrollRef.current.scrollLeft = 0;
     }
   }, []);
-
-  const pricePerPax = useMemo(() => {
-    const total = parseFloat(totalPrice);
-    const pax = parseInt(maxParticipants);
-    if (!isNaN(total) && !isNaN(pax) && pax > 0 && total >= 0) {
-      return total / pax;
-    }
-    return null;
-  }, [totalPrice, maxParticipants]);
 
   function scrollDates(direction: "left" | "right") {
     if (!scrollRef.current) return;
@@ -87,18 +78,14 @@ export function CreateEventForm({ onSubmit, loading, error }: CreateEventFormPro
     if (ampm === "AM" && h === 12) h = 0;
     const dateTimeStr = `${selectedDateKey}T${String(h).padStart(2, "0")}:${minute}:00`;
 
-    const total = parseFloat(totalPrice);
-    const pax = parseInt(maxParticipants);
-    const perPax = pax > 0 ? total / pax : total;
-
     await onSubmit({
       title,
       description,
       sport_type: sportType,
       location,
       date_time: new Date(dateTimeStr).toISOString(),
-      price: Math.round(perPax * 100) / 100,
-      max_participants: pax,
+      price: parseFloat(price),
+      max_participants: parseInt(maxParticipants),
     });
   }
 
@@ -262,56 +249,34 @@ export function CreateEventForm({ onSubmit, loading, error }: CreateEventFormPro
             </div>
           </div>
 
-          {/* Price + participants */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Total Price ($)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.50"
-                  min="0"
-                  value={totalPrice}
-                  onChange={(e) => setTotalPrice(e.target.value)}
-                  placeholder="80.00"
-                  required
-                  className="h-12 rounded-lg"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="max" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Max Participants</Label>
-                <Input
-                  id="max"
-                  type="number"
-                  min="2"
-                  value={maxParticipants}
-                  onChange={(e) => setMaxParticipants(e.target.value)}
-                  placeholder="8"
-                  required
-                  className="h-12 rounded-lg"
-                />
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Price/pax ($)</Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.50"
+                min="0"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="10.00"
+                required
+                className="h-12 rounded-lg"
+              />
             </div>
-
-            {/* Price per pax preview */}
-            {pricePerPax !== null && (
-              <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 shrink-0">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-lg font-heading font-bold text-primary">
-                    ${pricePerPax.toFixed(2)}
-                  </span>
-                  <span className="text-sm text-muted-foreground">per pax</span>
-                </div>
-                <div className="ml-auto flex items-center gap-1 text-sm text-muted-foreground">
-                  <Users className="h-3.5 w-3.5" />
-                  <span>{maxParticipants}</span>
-                </div>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="max" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Max Participants</Label>
+              <Input
+                id="max"
+                type="number"
+                min="2"
+                value={maxParticipants}
+                onChange={(e) => setMaxParticipants(e.target.value)}
+                placeholder="8"
+                required
+                className="h-12 rounded-lg"
+              />
+            </div>
           </div>
 
           {error && (

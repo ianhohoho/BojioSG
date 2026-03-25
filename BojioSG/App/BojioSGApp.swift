@@ -8,6 +8,11 @@ struct BojioSGApp: App {
         WindowGroup {
             ContentView()
                 .environment(authService)
+                .onAppear {
+                    APIClient.shared.onUnauthorized = {
+                        authService.clearToken()
+                    }
+                }
         }
     }
 }

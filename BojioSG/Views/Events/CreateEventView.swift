@@ -34,7 +34,7 @@ struct CreateEventView: View {
                 VStack(spacing: 20) {
                     // Sport Type Picker
                     VStack(alignment: .leading, spacing: 8) {
-                        label("Sport", icon: "sportscourt.fill")
+                        sectionLabel("Sport", icon: "sportscourt.fill")
 
                         FlowLayout(spacing: 10) {
                             ForEach(sportTypes, id: \.self) { sport in
@@ -46,7 +46,7 @@ struct CreateEventView: View {
 
                     // Event Details
                     VStack(alignment: .leading, spacing: 16) {
-                        label("Details", icon: "square.and.pencil")
+                        sectionLabel("Details", icon: "square.and.pencil")
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Title")
@@ -81,7 +81,7 @@ struct CreateEventView: View {
 
                     // Date & Time
                     VStack(alignment: .leading, spacing: 12) {
-                        label("When", icon: "calendar")
+                        sectionLabel("When", icon: "calendar")
 
                         DatePicker(
                             "Date & Time",
@@ -96,7 +96,7 @@ struct CreateEventView: View {
 
                     // Price & Capacity
                     VStack(alignment: .leading, spacing: 16) {
-                        label("Pricing & Capacity", icon: "dollarsign.circle.fill")
+                        sectionLabel("Pricing & Capacity", icon: "dollarsign.circle.fill")
 
                         HStack {
                             VStack(alignment: .leading, spacing: 6) {
@@ -178,7 +178,7 @@ struct CreateEventView: View {
         .buttonStyle(.plain)
     }
 
-    private func label(_ text: String, icon: String) -> some View {
+    private func sectionLabel(_ text: String, icon: String) -> some View {
         Label(text, systemImage: icon)
             .font(.subheadline)
             .fontWeight(.semibold)
