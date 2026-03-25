@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,9 @@ import { ApiError } from "@/lib/api-client";
 export default function ProfilePage() {
   const { token, username, updateNickname } = useAuth();
   const { profile, loading, fetchProfile, updateProfile } = useProfile(token);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSetup = searchParams.get("setup") === "1";
   const [nickname, setNickname] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [saving, setSaving] = useState(false);
@@ -41,6 +45,10 @@ export default function ProfilePage() {
         updateNickname(updated.nickname);
       }
       setMessage("Profile updated!");
+      if (isSetup) {
+        router.replace("/events");
+        return;
+      }
     } catch (err) {
       setMessage(err instanceof ApiError ? err.message : "Failed to save");
     } finally {
@@ -78,6 +86,15 @@ export default function ProfilePage() {
           <h2 className="font-heading text-xl font-bold">{nickname || username}</h2>
           <p className="text-sm text-muted-foreground mt-0.5">@{username}</p>
         </div>
+
+        {isSetup && (
+          <div className="flex items-start gap-3 rounded-lg bg-primary/10 px-4 py-3 mb-6">
+            <Phone className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+            <p className="text-sm text-primary">
+              Add your phone number so participants can send you PayNow payments when you organise events.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSave} className="space-y-5">
           <div className="space-y-2">
@@ -119,7 +136,7 @@ export default function ProfilePage() {
                 Saving...
               </>
             ) : (
-              "Save Changes"
+              isSetup ? "Continue" : "Save Changes"
             )}
           </Button>
         </form>

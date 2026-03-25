@@ -7,6 +7,7 @@ final class AuthService {
     private(set) var username: String?
     private(set) var nickname: String?
     private(set) var isAuthenticated = false
+    var needsPhoneSetup = false
 
     private let tokenKey = "bojiosg_auth_token"
     private let userIdKey = "bojiosg_user_id"

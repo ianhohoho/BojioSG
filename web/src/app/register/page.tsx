@@ -33,7 +33,7 @@ export default function RegisterPage() {
         body: { username, password },
       });
       login(data);
-      router.replace("/events");
+      router.replace("/profile?setup=1");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Registration failed");
     } finally {

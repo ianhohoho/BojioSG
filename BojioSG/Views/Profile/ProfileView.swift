@@ -21,6 +21,23 @@ struct ProfileView: View {
                     }
                     .padding(.top, 8)
 
+                    // PayNow setup banner (shown for new users)
+                    if authService.needsPhoneSetup {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "phone.fill")
+                                .foregroundStyle(Color.accentColor)
+                                .font(.body)
+                                .padding(.top, 2)
+                            Text("Add your phone number so participants can send you PayNow payments when you organise events.")
+                                .font(.subheadline)
+                                .foregroundStyle(Color.accentColor)
+                        }
+                        .padding(12)
+                        .background(Color.accentColor.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .padding(.horizontal, 16)
+                    }
+
                     // Profile form card
                     VStack(spacing: 16) {
                         VStack(alignment: .leading, spacing: 6) {
@@ -57,12 +74,16 @@ struct ProfileView: View {
 
                     // Save button
                     GradientButton(
-                        label: viewModel.saveSuccess ? "Saved!" : "Save Changes",
+                        label: viewModel.saveSuccess ? "Saved!" : (authService.needsPhoneSetup ? "Continue" : "Save Changes"),
                         isLoading: viewModel.isSaving
                     ) {
                         Task {
                             if let profile = await viewModel.updateProfile(token: authService.token) {
                                 authService.updateNickname(profile.nickname)
+                            }
+                            if authService.needsPhoneSetup {
+                                authService.needsPhoneSetup = false
+                                dismiss()
                             }
                         }
                     }
@@ -71,11 +92,14 @@ struct ProfileView: View {
                 }
                 .padding(.bottom, 20)
             }
-            .navigationTitle("Profile")
+            .navigationTitle(authService.needsPhoneSetup ? "Set Up Profile" : "Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button(authService.needsPhoneSetup ? "Skip" : "Done") {
+                        if authService.needsPhoneSetup {
+                            authService.needsPhoneSetup = false
+                        }
                         dismiss()
                     }
                 }

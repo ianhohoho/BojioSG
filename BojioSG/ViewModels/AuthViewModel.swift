@@ -67,6 +67,7 @@ final class AuthViewModel {
                 username: response.username,
                 nickname: response.nickname
             )
+            authService.needsPhoneSetup = true
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {

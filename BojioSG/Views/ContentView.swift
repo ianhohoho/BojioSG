@@ -12,6 +12,12 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut, value: authService.isAuthenticated)
+        .sheet(isPresented: Binding(
+            get: { authService.needsPhoneSetup },
+            set: { authService.needsPhoneSetup = $0 }
+        )) {
+            ProfileView()
+        }
     }
 }
 
