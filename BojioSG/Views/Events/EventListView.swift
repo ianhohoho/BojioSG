@@ -6,11 +6,26 @@ enum EventFilter: String, CaseIterable {
     case joined = "Joined"
 }
 
-enum TimeFilter: String, CaseIterable {
-    case all = "Any Time"
-    case nextDay = "24 Hours"
-    case nextWeek = "This Week"
-    case nextMonth = "This Month"
+private func generateDates(count: Int) -> [(key: String, day: String, date: Int, month: String, fullDate: Date)] {
+    let calendar = Calendar.current
+    let today = calendar.startOfDay(for: Date())
+    let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd"
+
+    return (0..<count).map { i in
+        let d = calendar.date(byAdding: .day, value: i, to: today)!
+        let comp = calendar.dateComponents([.weekday, .day, .month], from: d)
+        let dayLabel = i == 0 ? "Today" : i == 1 ? "Tmr" : dayNames[comp.weekday! - 1]
+        return (
+            key: formatter.string(from: d),
+            day: dayLabel,
+            date: comp.day!,
+            month: monthNames[comp.month! - 1],
+            fullDate: d
+        )
+    }
 }
 
 struct EventListView: View {
@@ -24,8 +39,10 @@ struct EventListView: View {
     @State private var pendingEventNavigation: Int?
     @State private var filter: EventFilter = .all
     @State private var selectedSport: String?
-    @State private var timeFilter: TimeFilter = .all
+    @State private var selectedDateKey: String?
     @State private var sortAscending = true
+
+    private let dates = generateDates(count: 21)
 
     private static let sportTypes: [(String, String, Color)] = [
         ("Pickleball", "figure.pickleball", .green),
@@ -57,17 +74,12 @@ struct EventListView: View {
         if let sport = selectedSport {
             events = events.filter { $0.sportType.lowercased() == sport.lowercased() }
         }
-        if timeFilter != .all {
-            let now = Date()
-            let cutoff: Date = switch timeFilter {
-            case .nextDay: Calendar.current.date(byAdding: .day, value: 1, to: now)!
-            case .nextWeek: Calendar.current.date(byAdding: .day, value: 7, to: now)!
-            case .nextMonth: Calendar.current.date(byAdding: .month, value: 1, to: now)!
-            case .all: now
-            }
+        if let dateKey = selectedDateKey {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
             events = events.filter { event in
-                guard let date = event.parsedDate else { return true }
-                return date >= now && date <= cutoff
+                guard let date = event.parsedDate else { return false }
+                return formatter.string(from: date) == dateKey
             }
         }
         events.sort { a, b in
@@ -87,6 +99,9 @@ struct EventListView: View {
     }
 
     private var emptyStateMessage: String {
+        if selectedDateKey != nil {
+            return "No events on this date."
+        }
         switch filter {
         case .all: return "No events available right now."
         case .organised: return "You haven't organised any events yet."
@@ -123,6 +138,79 @@ struct EventListView: View {
                     VStack(spacing: 0) {
                         // Filter rows
                         VStack(spacing: 6) {
+                            // Date scroller
+                            ScrollViewReader { proxy in
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 6) {
+                                        // "All" button
+                                        Button {
+                                            withAnimation(.easeInOut(duration: 0.2)) {
+                                                selectedDateKey = nil
+                                            }
+                                        } label: {
+                                            VStack(spacing: 2) {
+                                                Text("All")
+                                                    .font(.system(size: 11))
+                                                Text("—")
+                                                    .font(.subheadline)
+                                                    .fontWeight(.semibold)
+                                            }
+                                            .frame(minWidth: 52)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 12)
+                                            .background(selectedDateKey == nil ? Color.accentColor : Color(.systemGray6))
+                                            .foregroundStyle(selectedDateKey == nil ? .white : .secondary)
+                                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        }
+                                        .id("date-all")
+
+                                        ForEach(dates, id: \.key) { d in
+                                            Button {
+                                                withAnimation(.easeInOut(duration: 0.2)) {
+                                                    selectedDateKey = selectedDateKey == d.key ? nil : d.key
+                                                }
+                                            } label: {
+                                                VStack(spacing: 2) {
+                                                    Text(d.day)
+                                                        .font(.system(size: 11))
+                                                    Text("\(d.date)")
+                                                        .font(.subheadline)
+                                                        .fontWeight(.semibold)
+                                                    Text(d.month)
+                                                        .font(.system(size: 10))
+                                                        .opacity(0.7)
+                                                }
+                                                .frame(minWidth: 52)
+                                                .padding(.vertical, 8)
+                                                .padding(.horizontal, 12)
+                                                .background(
+                                                    selectedDateKey == d.key
+                                                        ? Color.accentColor
+                                                        : d.day == "Today"
+                                                            ? Color.accentColor.opacity(0.12)
+                                                            : Color(.systemGray6)
+                                                )
+                                                .foregroundStyle(
+                                                    selectedDateKey == d.key
+                                                        ? .white
+                                                        : d.day == "Today"
+                                                            ? Color.accentColor
+                                                            : .secondary
+                                                )
+                                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            }
+                                            .id("date-\(d.key)")
+                                        }
+                                    }
+                                    .padding(.horizontal, 16)
+                                }
+                                .onAppear {
+                                    if let key = selectedDateKey {
+                                        proxy.scrollTo("date-\(key)", anchor: .center)
+                                    }
+                                }
+                            }
+
                             // Row 1: Event filter pills
                             HStack(spacing: 8) {
                                 ForEach(EventFilter.allCases, id: \.self) { option in
@@ -144,7 +232,7 @@ struct EventListView: View {
                             }
                             .padding(.horizontal, 16)
 
-                            // Row 2: Type menu + Time menu + Reset
+                            // Row 2: Sport menu + Reset + Sort
                             HStack(spacing: 8) {
                                 // Sport type menu
                                 Menu {
@@ -177,7 +265,7 @@ struct EventListView: View {
                                     HStack(spacing: 5) {
                                         Image(systemName: selectedSportIcon)
                                             .font(.caption)
-                                        Text(selectedSport ?? "Type")
+                                        Text(selectedSport ?? "Sport")
                                             .font(.caption)
                                             .fontWeight(.medium)
                                         Image(systemName: "chevron.up.chevron.down")
@@ -190,47 +278,11 @@ struct EventListView: View {
                                     .clipShape(Capsule())
                                 }
 
-                                // Time filter menu
-                                Menu {
-                                    ForEach(TimeFilter.allCases, id: \.self) { option in
-                                        Button {
-                                            withAnimation(.easeInOut(duration: 0.2)) {
-                                                timeFilter = option
-                                            }
-                                        } label: {
-                                            if timeFilter == option {
-                                                Label(option.rawValue, systemImage: "checkmark")
-                                            } else {
-                                                Text(option.rawValue)
-                                            }
-                                        }
-                                    }
-                                } label: {
-                                    let isActive = timeFilter != .all
-                                    HStack(spacing: 5) {
-                                        Image(systemName: isActive ? "calendar" : "clock")
-                                            .font(.caption)
-                                        Text(isActive ? timeFilter.rawValue : "Time")
-                                            .font(.caption)
-                                            .fontWeight(.medium)
-                                        Image(systemName: "chevron.up.chevron.down")
-                                            .font(.system(size: 8, weight: .bold))
-                                    }
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 7)
-                                    .background(isActive ? Color.purple.opacity(0.15) : Color.gray.opacity(0.1))
-                                    .foregroundStyle(isActive ? .purple : .secondary)
-                                    .clipShape(Capsule())
-                                }
-
-                                Spacer()
-
-                                // Reset button (only visible when filters are active)
-                                if selectedSport != nil || timeFilter != .all {
+                                // Reset button (only visible when sport filter is active)
+                                if selectedSport != nil {
                                     Button {
                                         withAnimation(.easeInOut(duration: 0.2)) {
                                             selectedSport = nil
-                                            timeFilter = .all
                                         }
                                     } label: {
                                         HStack(spacing: 4) {
@@ -243,12 +295,10 @@ struct EventListView: View {
                                         .foregroundStyle(.red)
                                     }
                                 }
-                            }
-                            .padding(.horizontal, 16)
 
-                            // Row 3: Sort order
-                            HStack {
                                 Spacer()
+
+                                // Sort order
                                 Button {
                                     withAnimation(.easeInOut(duration: 0.2)) {
                                         sortAscending.toggle()
@@ -258,7 +308,7 @@ struct EventListView: View {
                                         Image(systemName: sortAscending ? "arrow.up" : "arrow.down")
                                             .font(.caption2)
                                             .fontWeight(.bold)
-                                        Text(sortAscending ? "Earliest first" : "Latest first")
+                                        Text(sortAscending ? "Earliest" : "Latest")
                                             .font(.caption)
                                             .fontWeight(.medium)
                                     }
