@@ -79,11 +79,11 @@ export default function EventDetailPage({
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => router.back()}
+        onClick={() => router.push("/events")}
         className="gap-1.5 rounded-lg text-muted-foreground hover:text-foreground -ml-2"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back
+        Home
       </Button>
 
       <EventDetailInfo event={event} />
