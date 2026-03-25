@@ -11,7 +11,7 @@ interface NavBarProps {
 }
 
 export function NavBar({ unreadCount }: NavBarProps) {
-  const { displayName, logout } = useAuth();
+  const { displayName, signOut } = useAuth();
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
@@ -77,7 +77,7 @@ export function NavBar({ unreadCount }: NavBarProps) {
           <Button
             variant="ghost"
             size="icon-sm"
-            onClick={logout}
+            onClick={() => signOut()}
             title="Logout"
             className="rounded-lg text-muted-foreground hover:text-foreground"
           >

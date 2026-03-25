@@ -1,5 +1,11 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://bojiosg-api.fly.dev";
 
+let _onUnauthorized: (() => void) | null = null;
+
+export function setOnUnauthorized(callback: () => void) {
+  _onUnauthorized = callback;
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -32,6 +38,9 @@ export async function apiRequest<T>(
   });
 
   if (!res.ok) {
+    if ((res.status === 401 || res.status === 403) && _onUnauthorized) {
+      _onUnauthorized();
+    }
     let message = `Request failed (${res.status})`;
     try {
       const data = await res.json();

@@ -33,7 +33,7 @@ def _event_to_response(event: Event, current_user: User | None = None) -> EventR
             participants = [
                 ParticipantResponse(
                     id=p.user.id,
-                    username=p.user.nickname or p.user.username,
+                    username=p.user.display_name,
                     phone_number=p.user.phone_number,
                     status=p.status,
                     joined_at=p.joined_at,
@@ -52,7 +52,7 @@ def _event_to_response(event: Event, current_user: User | None = None) -> EventR
         max_participants=event.max_participants,
         current_participants=approved_count,
         organizer_id=event.organizer_id,
-        organizer_username=event.organizer.nickname or event.organizer.username,
+        organizer_username=event.organizer.display_name,
         organizer_phone_number=event.organizer.phone_number,
         is_organizer=is_organizer,
         join_status=join_status,
@@ -193,7 +193,7 @@ def join_event(
     )
     db.add(participant)
 
-    requester_name = current_user.nickname or current_user.username
+    requester_name = current_user.display_name
     notification = Notification(
         user_id=event.organizer_id,
         event_id=event_id,
@@ -252,7 +252,7 @@ def approve_participant(
 
     participation.status = "pending_payment"
     organizer = db.query(User).filter(User.id == event.organizer_id).first()
-    organizer_name = organizer.nickname or organizer.username
+    organizer_name = organizer.display_name
     organizer_phone = organizer.phone_number or "N/A"
     notification = Notification(
         user_id=user_id,
@@ -299,7 +299,7 @@ def notify_payment(
         )
 
     participation.status = "payment_submitted"
-    payer_name = current_user.nickname or current_user.username
+    payer_name = current_user.display_name
     notification = Notification(
         user_id=event.organizer_id,
         event_id=event_id,
@@ -471,7 +471,7 @@ def leave_event(
             detail="You are not a participant of this event",
         )
 
-    leaver_name = current_user.nickname or current_user.username
+    leaver_name = current_user.display_name
     notification = Notification(
         user_id=event.organizer_id,
         event_id=event_id,

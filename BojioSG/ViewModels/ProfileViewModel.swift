@@ -4,7 +4,7 @@ import Foundation
 final class ProfileViewModel {
     var nickname = ""
     var phoneNumber = ""
-    var username = ""
+    var email = ""
     var isLoading = false
     var isSaving = false
     var errorMessage: String?
@@ -22,7 +22,7 @@ final class ProfileViewModel {
                 path: "/auth/me",
                 token: token
             )
-            username = profile.username
+            email = profile.email ?? ""
             nickname = profile.nickname ?? ""
             phoneNumber = profile.phoneNumber ?? ""
         } catch let error as APIError {

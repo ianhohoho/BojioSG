@@ -1,62 +1,6 @@
-"""Tests for authentication endpoints."""
+"""Tests for authentication and profile endpoints."""
 
-from tests.conftest import auth_header, login
-
-
-class TestRegister:
-    def test_register_success(self, client):
-        r = client.post("/auth/register", json={"username": "newuser", "password": "secret123"})
-        assert r.status_code == 200
-        data = r.json()
-        assert data["access_token"]
-        assert data["token_type"] == "bearer"
-        assert data["user_id"]
-        assert data["username"] == "newuser"
-        assert data["nickname"] == "newuser"
-
-    def test_register_duplicate_username(self, client, seed_users):
-        r = client.post("/auth/register", json={"username": "admin", "password": "anything"})
-        assert r.status_code == 400
-        assert "already taken" in r.json()["detail"]
-
-    def test_register_short_password(self, client):
-        r = client.post("/auth/register", json={"username": "newuser", "password": "short"})
-        assert r.status_code == 400
-
-
-class TestLogin:
-    def test_login_success(self, client, seed_users):
-        r = client.post("/auth/login", json={"username": "admin", "password": "admin"})
-        assert r.status_code == 200
-        data = r.json()
-        assert data["access_token"]
-        assert data["token_type"] == "bearer"
-        assert data["user_id"] == seed_users["admin"].id
-        assert data["username"] == "admin"
-
-    def test_login_includes_nickname(self, client, seed_users):
-        """Login response includes nickname when user has one."""
-        # Set a nickname on admin
-        seed_users["admin"].nickname = "The Admin"
-        token = login(client, "admin")
-        r = client.post("/auth/login", json={"username": "admin", "password": "admin"})
-        assert r.status_code == 200
-        assert r.json()["nickname"] == "The Admin"
-
-    def test_login_all_users(self, client, seed_users):
-        """Every seeded user can log in with password = username."""
-        for name in ["admin", "alice", "bob", "charlie", "diana"]:
-            r = client.post("/auth/login", json={"username": name, "password": name})
-            assert r.status_code == 200, f"Login failed for {name}"
-            assert r.json()["username"] == name
-
-    def test_login_wrong_password(self, client, seed_users):
-        r = client.post("/auth/login", json={"username": "admin", "password": "wrong"})
-        assert r.status_code == 401
-
-    def test_login_nonexistent_user(self, client):
-        r = client.post("/auth/login", json={"username": "ghost", "password": "ghost"})
-        assert r.status_code == 401
+from tests.conftest import auth_header, create_test_token, login
 
 
 class TestProfile:
@@ -65,7 +9,7 @@ class TestProfile:
         r = client.get("/auth/me", headers=auth_header(token))
         assert r.status_code == 200
         data = r.json()
-        assert data["username"] == "admin"
+        assert data["email"] == "admin@test.com"
         assert data["id"] == seed_users["admin"].id
         assert "nickname" in data
         assert "phone_number" in data
@@ -105,7 +49,6 @@ class TestProfile:
 
     def test_nickname_shown_in_events(self, client, seed_events, seed_users):
         """Organizer nickname should appear as organizer_username in event responses."""
-        # Set admin's nickname
         seed_users["admin"].nickname = "The Admin"
         r = client.get("/events")
         assert r.status_code == 200
@@ -125,3 +68,20 @@ class TestProfile:
         data = r.json()
         alice_p = next(p for p in data["participants"] if p["id"] == seed_users["alice"].id)
         assert alice_p["username"] == "Ali"
+
+
+class TestAutoProvisioning:
+    def test_new_user_auto_created(self, client, db_session):
+        """A new Supabase user should be auto-provisioned on first API call."""
+        new_uid = "bbbbbbbb-0000-0000-0000-000000000001"
+        token = create_test_token(new_uid, email="newuser@example.com")
+        r = client.get("/auth/me", headers=auth_header(token))
+        assert r.status_code == 200
+        data = r.json()
+        assert data["email"] == "newuser@example.com"
+        assert data["nickname"] == "newuser"  # email prefix
+
+    def test_invalid_jwt_rejected(self, client):
+        """An invalid JWT should be rejected."""
+        r = client.get("/auth/me", headers=auth_header("invalid-token"))
+        assert r.status_code == 401

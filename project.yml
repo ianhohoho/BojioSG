@@ -6,12 +6,20 @@ options:
   xcodeVersion: "15.0"
   generateEmptyDirectories: true
 
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift.git
+    from: "2.0.0"
+
 targets:
   BojioSG:
     type: application
     platform: iOS
     sources:
       - BojioSG
+    dependencies:
+      - package: Supabase
+        product: Supabase
     info:
       path: BojioSG/Info.plist
       properties:

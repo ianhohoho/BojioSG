@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -10,8 +11,10 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    password_hash = Column(String, nullable=False)
+    username = Column(String, unique=True, index=True, nullable=True)
+    password_hash = Column(String, nullable=True)
+    supabase_uid = Column(String, unique=True, index=True, nullable=True)
+    email = Column(String, nullable=True)
     nickname = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -19,6 +22,10 @@ class User(Base):
     organized_events = relationship("Event", back_populates="organizer")
     participations = relationship("EventParticipant", back_populates="user")
     notifications = relationship("Notification", back_populates="user")
+
+    @property
+    def display_name(self) -> str:
+        return self.nickname or self.username or (self.email.split("@")[0] if self.email else "Unknown")
 
 
 class Event(Base):

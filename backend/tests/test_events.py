@@ -53,7 +53,7 @@ class TestListEvents:
         tennis = next(e for e in events if e["title"] == "Sunday Tennis")
         assert tennis["participants"] is not None
         usernames = {p["username"] for p in tennis["participants"]}
-        assert usernames == {"admin", "bob", "charlie", "diana"}
+        assert usernames == {"admin", "Bob", "Charlie", "Diana"}
         # All seeded participants have status approved
         for p in tennis["participants"]:
             assert p["status"] == "approved"
@@ -103,7 +103,7 @@ class TestCreateEvent:
         assert r.status_code == 201
         data = r.json()
         assert data["title"] == "New Event"
-        assert data["organizer_username"] == "alice"
+        assert data["organizer_username"] == "Alice"
         assert data["is_organizer"] is True
 
     def test_create_event_unauthenticated(self, client):

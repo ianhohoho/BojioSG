@@ -4,35 +4,10 @@ from pydantic import BaseModel
 
 
 # Auth schemas
-class UserCreate(BaseModel):
-    username: str
-    password: str
-
-
-class UserLogin(BaseModel):
-    username: str
-    password: str
-
-
-class UserResponse(BaseModel):
-    id: int
-    username: str
-    created_at: datetime
-
-    model_config = {"from_attributes": True}
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    user_id: int
-    username: str
-    nickname: str | None = None
-
-
 class ProfileResponse(BaseModel):
     id: int
-    username: str
+    username: str | None = None
+    email: str | None = None
     nickname: str | None = None
     phone_number: str | None = None
     created_at: datetime

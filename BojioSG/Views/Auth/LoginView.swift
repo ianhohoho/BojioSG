@@ -43,10 +43,11 @@ struct LoginView: View {
                         VStack(spacing: 16) {
                             VStack(spacing: 14) {
                                 AuthInputField(
-                                    icon: "person.fill",
-                                    placeholder: "Username",
-                                    text: $viewModel.username,
-                                    contentType: .username
+                                    icon: "envelope.fill",
+                                    placeholder: "Email",
+                                    text: $viewModel.email,
+                                    contentType: .emailAddress,
+                                    keyboardType: .emailAddress
                                 )
                                 AuthInputField(
                                     icon: "lock.fill",

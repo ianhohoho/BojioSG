@@ -15,7 +15,7 @@ struct ProfileView: View {
                             .font(.system(size: 72))
                             .foregroundStyle(.gray.opacity(0.5))
 
-                        Text("@\(authService.username ?? "")")
+                        Text(authService.email ?? "")
                             .font(.headline)
                             .foregroundStyle(.secondary)
                     }

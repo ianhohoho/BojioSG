@@ -2,9 +2,10 @@
 
 from datetime import datetime, timedelta, timezone
 
+import uuid
+
 from database import Base, SessionLocal, engine
 from models import Event, EventParticipant, Notification, User
-from auth import hash_password
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -12,30 +13,30 @@ Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
 
-def get_or_create_user(username: str, password: str = "password123", nickname: str | None = None, phone_number: str | None = None) -> User:
-    user = db.query(User).filter(User.username == username).first()
+def get_or_create_user(email: str, nickname: str | None = None, phone_number: str | None = None) -> User:
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         user = User(
-            username=username,
-            password_hash=hash_password(password),
+            supabase_uid=str(uuid.uuid4()),
+            email=email,
             nickname=nickname,
             phone_number=phone_number,
         )
         db.add(user)
         db.commit()
         db.refresh(user)
-        print(f"Created user: {username} (id={user.id}, nickname={nickname})")
+        print(f"Created user: {email} (id={user.id}, nickname={nickname})")
     else:
-        print(f"User already exists: {username} (id={user.id})")
+        print(f"User already exists: {email} (id={user.id})")
     return user
 
 
-# Create users (password = username for all)
-admin = get_or_create_user("admin", "admin", nickname="Admin", phone_number="91234567")
-alice = get_or_create_user("alice", "alice", nickname="Alice Tan", phone_number="98765432")
-bob = get_or_create_user("bob", "bob", nickname="Bobby", phone_number="81112222")
-charlie = get_or_create_user("charlie", "charlie", nickname="Charlie Lim", phone_number="83334444")
-diana = get_or_create_user("diana", "diana", nickname="Diana", phone_number="85556666")
+# Create users
+admin = get_or_create_user("admin@bojiosg.com", nickname="Admin", phone_number="91234567")
+alice = get_or_create_user("alice@bojiosg.com", nickname="Alice Tan", phone_number="98765432")
+bob = get_or_create_user("bob@bojiosg.com", nickname="Bobby", phone_number="81112222")
+charlie = get_or_create_user("charlie@bojiosg.com", nickname="Charlie Lim", phone_number="83334444")
+diana = get_or_create_user("diana@bojiosg.com", nickname="Diana", phone_number="85556666")
 
 # Sample events
 now = datetime.now(timezone.utc)

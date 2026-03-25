@@ -11,7 +11,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { ApiError } from "@/lib/api-client";
 
 export default function ProfilePage() {
-  const { token, username, updateNickname } = useAuth();
+  const { token, session, updateNickname } = useAuth();
   const { profile, loading, fetchProfile, updateProfile } = useProfile(token);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -56,7 +56,8 @@ export default function ProfilePage() {
     }
   }
 
-  const initials = (nickname || username || "?").slice(0, 2).toUpperCase();
+  const email = session?.user?.email;
+  const initials = (nickname || email || "?").slice(0, 2).toUpperCase();
 
   if (loading) {
     return (
@@ -83,8 +84,8 @@ export default function ProfilePage() {
           <span className="flex h-20 w-20 items-center justify-center rounded-xl bg-primary text-2xl font-heading font-bold text-primary-foreground mb-4">
             {initials}
           </span>
-          <h2 className="font-heading text-xl font-bold">{nickname || username}</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">@{username}</p>
+          <h2 className="font-heading text-xl font-bold">{nickname || email?.split("@")[0]}</h2>
+          {email && <p className="text-sm text-muted-foreground mt-0.5">{email}</p>}
         </div>
 
         {isSetup && (

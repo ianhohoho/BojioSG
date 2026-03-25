@@ -1,20 +1,8 @@
 // Auth
-export interface UserCreate {
-  username: string;
-  password: string;
-}
-
-export interface Token {
-  access_token: string;
-  token_type: string;
-  user_id: number;
-  username: string;
-  nickname: string | null;
-}
-
 export interface ProfileResponse {
   id: number;
-  username: string;
+  username: string | null;
+  email: string | null;
   nickname: string | null;
   phone_number: string | null;
   created_at: string;

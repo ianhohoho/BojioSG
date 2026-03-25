@@ -5,6 +5,7 @@ struct AuthInputField: View {
     let placeholder: String
     @Binding var text: String
     var contentType: UITextContentType?
+    var keyboardType: UIKeyboardType = .default
     var isSecure = false
 
     var body: some View {
@@ -18,6 +19,7 @@ struct AuthInputField: View {
             } else {
                 TextField(placeholder, text: $text)
                     .textContentType(contentType)
+                    .keyboardType(keyboardType)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
             }

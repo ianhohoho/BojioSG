@@ -10,7 +10,7 @@ struct BojioSGApp: App {
                 .environment(authService)
                 .onAppear {
                     APIClient.shared.onUnauthorized = {
-                        authService.clearToken()
+                        Task { await authService.signOut() }
                     }
                 }
         }

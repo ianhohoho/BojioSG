@@ -2,16 +2,15 @@ import Foundation
 
 @Observable
 final class AuthViewModel {
-    var username = ""
+    var email = ""
     var password = ""
     var errorMessage: String?
+    var successMessage: String?
     var isLoading = false
 
-    private let apiClient = APIClient.shared
-
     func login(authService: AuthService) async {
-        guard !username.isEmpty, !password.isEmpty else {
-            errorMessage = "Please enter username and password"
+        guard !email.isEmpty, !password.isEmpty else {
+            errorMessage = "Please enter email and password"
             return
         }
 
@@ -19,20 +18,7 @@ final class AuthViewModel {
         errorMessage = nil
 
         do {
-            let request = LoginRequest(username: username, password: password)
-            let response: AuthResponse = try await apiClient.request(
-                path: "/auth/login",
-                method: "POST",
-                body: request
-            )
-            authService.setAuth(
-                token: response.accessToken,
-                userId: response.userId,
-                username: response.username,
-                nickname: response.nickname
-            )
-        } catch let error as APIError {
-            errorMessage = error.errorDescription
+            try await authService.signInWithEmail(email: email, password: password)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -41,8 +27,8 @@ final class AuthViewModel {
     }
 
     func register(authService: AuthService) async {
-        guard !username.isEmpty, !password.isEmpty else {
-            errorMessage = "Please enter username and password"
+        guard !email.isEmpty, !password.isEmpty else {
+            errorMessage = "Please enter email and password"
             return
         }
 
@@ -53,23 +39,13 @@ final class AuthViewModel {
 
         isLoading = true
         errorMessage = nil
+        successMessage = nil
 
         do {
-            let request = RegisterRequest(username: username, password: password)
-            let response: AuthResponse = try await apiClient.request(
-                path: "/auth/register",
-                method: "POST",
-                body: request
-            )
-            authService.setAuth(
-                token: response.accessToken,
-                userId: response.userId,
-                username: response.username,
-                nickname: response.nickname
-            )
-            authService.needsPhoneSetup = true
-        } catch let error as APIError {
-            errorMessage = error.errorDescription
+            let needsConfirmation = try await authService.signUp(email: email, password: password)
+            if needsConfirmation {
+                successMessage = "Check your email for a confirmation link."
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -78,8 +54,9 @@ final class AuthViewModel {
     }
 
     func clearForm() {
-        username = ""
+        email = ""
         password = ""
         errorMessage = nil
+        successMessage = nil
     }
 }

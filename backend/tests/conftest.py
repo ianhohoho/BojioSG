@@ -1,7 +1,11 @@
 """Shared fixtures for backend tests."""
 
+import os
+import uuid
+
 import pytest
 from fastapi.testclient import TestClient
+from jose import jwt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -9,9 +13,24 @@ from sqlalchemy.pool import StaticPool
 from database import Base, get_db
 from main import app
 from models import Event, EventParticipant, User
-from auth import hash_password
 
 from datetime import datetime, timedelta, timezone
+
+TEST_JWT_SECRET = "test-supabase-jwt-secret-for-unit-tests"
+os.environ["SUPABASE_JWT_SECRET"] = TEST_JWT_SECRET
+
+
+def create_test_token(supabase_uid: str, email: str = "test@example.com") -> str:
+    """Mint a Supabase-format JWT for testing."""
+    payload = {
+        "sub": supabase_uid,
+        "email": email,
+        "aud": "authenticated",
+        "role": "authenticated",
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "iat": datetime.now(timezone.utc),
+    }
+    return jwt.encode(payload, TEST_JWT_SECRET, algorithm="HS256")
 
 
 @pytest.fixture
@@ -47,16 +66,30 @@ def client(db_session):
     app.dependency_overrides.clear()
 
 
+# Pre-generated UUIDs for test users
+TEST_UUIDS = {
+    "admin": "aaaaaaaa-0000-0000-0000-000000000001",
+    "alice": "aaaaaaaa-0000-0000-0000-000000000002",
+    "bob": "aaaaaaaa-0000-0000-0000-000000000003",
+    "charlie": "aaaaaaaa-0000-0000-0000-000000000004",
+    "diana": "aaaaaaaa-0000-0000-0000-000000000005",
+}
+
+
 @pytest.fixture
 def seed_users(db_session):
-    """Create test users: admin, alice, bob, charlie, diana (password = username)."""
+    """Create test users with supabase_uid and email."""
     users = {}
     for name in ["admin", "alice", "bob", "charlie", "diana"]:
-        user = User(username=name, password_hash=hash_password(name))
+        user = User(
+            supabase_uid=TEST_UUIDS[name],
+            email=f"{name}@test.com",
+            nickname=name.capitalize() if name != "admin" else None,
+        )
         db_session.add(user)
     db_session.commit()
     for name in ["admin", "alice", "bob", "charlie", "diana"]:
-        users[name] = db_session.query(User).filter(User.username == name).first()
+        users[name] = db_session.query(User).filter(User.supabase_uid == TEST_UUIDS[name]).first()
     return users
 
 
@@ -106,10 +139,9 @@ def seed_events(db_session, seed_users):
 
 
 def login(client: TestClient, username: str) -> str:
-    """Login and return the access token."""
-    r = client.post("/auth/login", json={"username": username, "password": username})
-    assert r.status_code == 200
-    return r.json()["access_token"]
+    """Return a test JWT for the given user (no backend call needed)."""
+    uid = TEST_UUIDS[username]
+    return create_test_token(uid, email=f"{username}@test.com")
 
 
 def auth_header(token: str) -> dict:

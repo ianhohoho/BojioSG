@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, ArrowRight } from "lucide-react";
@@ -8,34 +8,39 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth-context";
-import { apiRequest, ApiError } from "@/lib/api-client";
-import type { Token } from "@/lib/types";
 
 export default function RegisterPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { signUp, isAuthenticated } = useAuth();
   const router = useRouter();
+
+  // If email confirmation is disabled and signup auto-signs in, redirect
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/profile?setup=1");
+    }
+  }, [isAuthenticated, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setSuccess("");
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
     }
     setLoading(true);
     try {
-      const data = await apiRequest<Token>("/auth/register", {
-        method: "POST",
-        body: { username, password },
-      });
-      login(data);
-      router.replace("/profile?setup=1");
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Registration failed");
+      const { error, needsConfirmation } = await signUp(email, password);
+      if (error) {
+        setError(error);
+      } else if (needsConfirmation) {
+        setSuccess("Check your email for a confirmation link to complete your registration.");
+      }
     } finally {
       setLoading(false);
     }
@@ -56,14 +61,15 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Username</Label>
+            <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Email</Label>
             <Input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               autoFocus
-              placeholder="Choose a username"
+              placeholder="Enter your email"
               className="h-12 rounded-lg bg-card border-border"
             />
           </div>
@@ -85,7 +91,12 @@ export default function RegisterPage() {
               {error}
             </div>
           )}
-          <Button type="submit" className="w-full h-12 rounded-lg font-heading font-semibold text-base tracking-wide" disabled={loading}>
+          {success && (
+            <div className="rounded-lg bg-emerald-50 dark:bg-emerald-400/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
+              {success}
+            </div>
+          )}
+          <Button type="submit" className="w-full h-12 rounded-lg font-heading font-semibold text-base tracking-wide" disabled={loading || !!success}>
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

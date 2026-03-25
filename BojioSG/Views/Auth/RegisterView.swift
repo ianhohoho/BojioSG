@@ -42,10 +42,11 @@ struct RegisterView: View {
                         VStack(spacing: 16) {
                             VStack(spacing: 14) {
                                 AuthInputField(
-                                    icon: "person.fill",
-                                    placeholder: "Username",
-                                    text: $viewModel.username,
-                                    contentType: .username
+                                    icon: "envelope.fill",
+                                    placeholder: "Email",
+                                    text: $viewModel.email,
+                                    contentType: .emailAddress,
+                                    keyboardType: .emailAddress
                                 )
                                 AuthInputField(
                                     icon: "lock.fill",
@@ -60,6 +61,14 @@ struct RegisterView: View {
                                 Text(error)
                                     .font(.caption)
                                     .foregroundStyle(.red)
+                                    .multilineTextAlignment(.center)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
+                            }
+
+                            if let success = viewModel.successMessage {
+                                Text(success)
+                                    .font(.caption)
+                                    .foregroundStyle(.green)
                                     .multilineTextAlignment(.center)
                                     .transition(.opacity.combined(with: .move(edge: .top)))
                             }
@@ -84,7 +93,7 @@ struct RegisterView: View {
                             .buttonBorderShape(.roundedRectangle(radius: 12))
                             .controlSize(.large)
                             .tint(.green)
-                            .disabled(viewModel.isLoading)
+                            .disabled(viewModel.isLoading || viewModel.successMessage != nil)
                         }
                         .padding(.horizontal, 24)
 
@@ -107,6 +116,7 @@ struct RegisterView: View {
                 if isAuth { dismiss() }
             }
             .animation(.easeInOut(duration: 0.2), value: viewModel.errorMessage)
+            .animation(.easeInOut(duration: 0.2), value: viewModel.successMessage)
         }
     }
 }

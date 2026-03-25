@@ -111,7 +111,7 @@ def test_withdraw_notifies_organizer(client, seed_events, seed_users):
     assert len(notifications) == 1
     n = notifications[0]
     assert n["type"] == "withdrawn"
-    assert "Alice Tan" in n["message"] or "alice" in n["message"]
+    assert "Alice" in n["message"]
     assert n["event_title"] == "Pickleball Doubles"
 
 

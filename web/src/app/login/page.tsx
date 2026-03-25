@@ -8,15 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth-context";
-import { apiRequest, ApiError } from "@/lib/api-client";
-import type { Token } from "@/lib/types";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { signInWithEmail } = useAuth();
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -24,14 +22,12 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const data = await apiRequest<Token>("/auth/login", {
-        method: "POST",
-        body: { username, password },
-      });
-      login(data);
-      router.replace("/events");
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Login failed");
+      const { error } = await signInWithEmail(email, password);
+      if (error) {
+        setError(error);
+      } else {
+        router.replace("/events");
+      }
     } finally {
       setLoading(false);
     }
@@ -52,14 +48,15 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Username</Label>
+            <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Email</Label>
             <Input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               autoFocus
-              placeholder="Enter your username"
+              placeholder="Enter your email"
               className="h-12 rounded-lg bg-card border-border"
             />
           </div>

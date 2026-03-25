@@ -394,7 +394,7 @@ struct EventListView: View {
                         }
 
                         Button {
-                            authService.clearToken()
+                            Task { await authService.signOut() }
                         } label: {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
                                 .foregroundStyle(.secondary)
