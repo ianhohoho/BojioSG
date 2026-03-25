@@ -3,27 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { useNotifications } from "@/hooks/use-notifications";
+import { NotificationsProvider, useNotificationsContext } from "@/lib/notifications-context";
 import { NavBar } from "@/components/nav-bar";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, token } = useAuth();
-  const router = useRouter();
-  const { unreadCount, fetchNotifications } = useNotifications(token);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/login");
-    }
-  }, [isAuthenticated, router]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchNotifications();
-    }
-  }, [isAuthenticated, fetchNotifications]);
-
-  if (!isAuthenticated) return null;
+function AppShell({ children }: { children: React.ReactNode }) {
+  const { unreadCount } = useNotificationsContext();
 
   return (
     <>
@@ -32,5 +16,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
     </>
+  );
+}
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <NotificationsProvider>
+      <AppShell>{children}</AppShell>
+    </NotificationsProvider>
   );
 }

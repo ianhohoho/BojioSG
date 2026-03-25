@@ -1,21 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Inbox as InboxIcon } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
-import { useNotifications } from "@/hooks/use-notifications";
+import { useNotificationsContext } from "@/lib/notifications-context";
 import { NotificationRow } from "@/components/notification-row";
 
 export default function InboxPage() {
-  const { token } = useAuth();
-  const { notifications, loading, fetchNotifications, markAsRead } =
-    useNotifications(token);
+  const { notifications, loading, markAsRead } = useNotificationsContext();
   const router = useRouter();
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
 
   async function handleClick(notification: { id: number; event_id: number; is_read: boolean }) {
     if (!notification.is_read) {
