@@ -25,6 +25,48 @@ export function formatPrice(price: number): string {
   return `$${price.toFixed(2)}/pax`;
 }
 
+export interface DateCell {
+  key: string;
+  dayLabel: string;
+  date: number;
+  month: string;
+  isToday: boolean;
+}
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export function generateDates(count: number): DateCell[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Array.from({ length: count }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() + i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    return {
+      key,
+      dayLabel: i === 0 ? "Today" : i === 1 ? "Tmr" : DAYS[d.getDay()],
+      date: d.getDate(),
+      month: MONTHS[d.getMonth()],
+      isToday: i === 0,
+    };
+  });
+}
+
+export function getCapacityColor(spotsLeft: number): string {
+  if (spotsLeft <= 0) return "bg-red-500 dark:bg-red-400";
+  if (spotsLeft === 1) return "bg-orange-500 dark:bg-orange-400";
+  if (spotsLeft === 2) return "bg-yellow-500 dark:bg-yellow-400";
+  return "bg-green-500 dark:bg-green-400";
+}
+
+export function getCapacityTextColor(spotsLeft: number): string {
+  if (spotsLeft <= 0) return "text-red-600 dark:text-red-400";
+  if (spotsLeft === 1) return "text-orange-600 dark:text-orange-400";
+  if (spotsLeft === 2) return "text-yellow-600 dark:text-yellow-400";
+  return "text-muted-foreground";
+}
+
 export function formatRelativeDate(dateStr: string): string {
   const d = parseAPIDate(dateStr);
   if (!d) return dateStr;

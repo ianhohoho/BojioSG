@@ -3,7 +3,8 @@
 import { Calendar, MapPin, Users, DollarSign, User } from "lucide-react";
 import type { EventResponse } from "@/lib/types";
 import { getSportInfo } from "@/lib/sport-constants";
-import { formatEventDate, formatPrice } from "@/lib/date-utils";
+import { formatEventDate, formatPrice, getCapacityTextColor } from "@/lib/date-utils";
+import { CapacityBar } from "@/components/capacity-bar";
 
 interface EventDetailInfoProps {
   event: EventResponse;
@@ -12,7 +13,6 @@ interface EventDetailInfoProps {
 export function EventDetailInfo({ event }: EventDetailInfoProps) {
   const sport = getSportInfo(event.sport_type);
   const spotsLeft = event.max_participants - event.current_participants;
-  const fillPercent = Math.min((event.current_participants / event.max_participants) * 100, 100);
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -81,29 +81,11 @@ export function EventDetailInfo({ event }: EventDetailInfoProps) {
                 </p>
               </div>
             </div>
-            <span className={`text-sm font-medium ${
-              spotsLeft <= 0 ? "text-red-600 dark:text-red-400"
-              : spotsLeft === 1 ? "text-orange-600 dark:text-orange-400"
-              : spotsLeft === 2 ? "text-yellow-600 dark:text-yellow-400"
-              : "text-muted-foreground"
-            }`}>
+            <span className={`text-sm font-medium ${getCapacityTextColor(spotsLeft)}`}>
               {spotsLeft > 0 ? `${spotsLeft} left` : "Full"}
             </span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-700 ease-out ${
-                spotsLeft <= 0
-                  ? "bg-red-500 dark:bg-red-400"
-                  : spotsLeft === 1
-                  ? "bg-orange-500 dark:bg-orange-400"
-                  : spotsLeft === 2
-                  ? "bg-yellow-500 dark:bg-yellow-400"
-                  : "bg-green-500 dark:bg-green-400"
-              }`}
-              style={{ width: `${fillPercent}%` }}
-            />
-          </div>
+          <CapacityBar current={event.current_participants} max={event.max_participants} height="h-1.5" />
         </div>
       </div>
     </div>

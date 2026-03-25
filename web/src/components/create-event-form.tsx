@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SPORTS, SPORT_TYPES } from "@/lib/sport-constants";
+import { generateDates } from "@/lib/date-utils";
 import type { EventCreate } from "@/lib/types";
 
 interface CreateEventFormProps {
@@ -15,29 +16,7 @@ interface CreateEventFormProps {
   error: string;
 }
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function generateDates(count: number) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return Array.from({ length: count }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() + i);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    return {
-      key,
-      dayLabel: i === 0 ? "Today" : i === 1 ? "Tmr" : DAYS[d.getDay()],
-      date: d.getDate(),
-      month: MONTHS[d.getMonth()],
-    };
-  });
-}
-
-function generateHours() {
-  return Array.from({ length: 12 }, (_, i) => i + 1);
-}
-
+const HOURS = Array.from({ length: 12 }, (_, i) => i + 1);
 const MINUTES = ["00", "15", "30", "45"];
 
 export function CreateEventForm({ onSubmit, loading, error }: CreateEventFormProps) {
@@ -216,7 +195,7 @@ export function CreateEventForm({ onSubmit, loading, error }: CreateEventFormPro
                 onChange={(e) => setHour(e.target.value)}
                 className="h-12 rounded-lg border border-border bg-card px-3 text-sm font-medium appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring flex-1 text-center"
               >
-                {generateHours().map((h) => (
+                {HOURS.map((h) => (
                   <option key={h} value={h}>{h}</option>
                 ))}
               </select>

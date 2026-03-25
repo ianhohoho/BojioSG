@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SPORTS, SPORT_TYPES } from "@/lib/sport-constants";
+import { generateDates } from "@/lib/date-utils";
 
 export type EventFilter = "all" | "organised" | "joined";
 export type SortOrder = "earliest" | "latest";
@@ -23,28 +24,6 @@ interface EventFiltersProps {
   onDateFilterChange: (d: string | null) => void;
   sortOrder: SortOrder;
   onSortOrderChange: (s: SortOrder) => void;
-}
-
-function generateDates(count: number): { key: string; day: string; date: number; month: string; isToday: boolean }[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  return Array.from({ length: count }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() + i);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return {
-      key: `${yyyy}-${mm}-${dd}`,
-      day: i === 0 ? "Today" : i === 1 ? "Tmr" : days[d.getDay()],
-      date: d.getDate(),
-      month: months[d.getMonth()],
-      isToday: i === 0,
-    };
-  });
 }
 
 export function EventFilters({
@@ -109,7 +88,7 @@ export function EventFilters({
                   : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
               }`}
             >
-              <span className="text-[11px]">{d.day}</span>
+              <span className="text-[11px]">{d.dayLabel}</span>
               <span className="text-sm font-semibold mt-0.5">{d.date}</span>
               <span className="text-[10px] opacity-60">{d.month}</span>
             </button>

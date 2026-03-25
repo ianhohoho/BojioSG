@@ -4,7 +4,8 @@ import Link from "next/link";
 import { MapPin, Calendar, Users } from "lucide-react";
 import type { EventResponse } from "@/lib/types";
 import { getSportInfo } from "@/lib/sport-constants";
-import { formatEventDate, formatPrice } from "@/lib/date-utils";
+import { formatEventDate, formatPrice, getCapacityTextColor } from "@/lib/date-utils";
+import { CapacityBar } from "@/components/capacity-bar";
 
 interface EventCardProps {
   event: EventResponse;
@@ -39,7 +40,6 @@ function StatusBadge({ event }: { event: EventResponse }) {
 export function EventCard({ event }: EventCardProps) {
   const sport = getSportInfo(event.sport_type);
   const spotsLeft = event.max_participants - event.current_participants;
-  const fillPercent = Math.min((event.current_participants / event.max_participants) * 100, 100);
 
   return (
     <Link href={`/events/${event.id}`} className="group block">
@@ -78,38 +78,17 @@ export function EventCard({ event }: EventCardProps) {
                 <span className={`font-medium ${spotsLeft <= 0 ? "text-red-600 dark:text-red-400" : ""}`}>{event.current_participants}</span>
                 <span className="text-muted-foreground">/{event.max_participants}</span>
               </span>
-              {spotsLeft === 2 && (
-                <span className="text-yellow-600 dark:text-yellow-400 text-xs font-medium ml-1">
-                  2 left
+              {spotsLeft <= 2 && (
+                <span className={`text-xs font-medium ml-1 ${getCapacityTextColor(spotsLeft)}`}>
+                  {spotsLeft <= 0 ? "Full" : `${spotsLeft} left`}
                 </span>
-              )}
-              {spotsLeft === 1 && (
-                <span className="text-orange-600 dark:text-orange-400 text-xs font-medium ml-1">
-                  1 left
-                </span>
-              )}
-              {spotsLeft <= 0 && (
-                <span className="text-red-600 dark:text-red-400 text-xs font-medium ml-1">Full</span>
               )}
             </div>
             <span className="text-sm font-semibold tabular-nums">
               {formatPrice(event.price)}
             </span>
           </div>
-          <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-700 ease-out ${
-                spotsLeft <= 0
-                  ? "bg-red-500 dark:bg-red-400"
-                  : spotsLeft === 1
-                  ? "bg-orange-500 dark:bg-orange-400"
-                  : spotsLeft === 2
-                  ? "bg-yellow-500 dark:bg-yellow-400"
-                  : "bg-green-500 dark:bg-green-400"
-              }`}
-              style={{ width: `${fillPercent}%` }}
-            />
-          </div>
+          <CapacityBar current={event.current_participants} max={event.max_participants} />
         </div>
       </div>
     </Link>

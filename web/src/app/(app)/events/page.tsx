@@ -12,6 +12,7 @@ import {
 import { parseAPIDate } from "@/lib/date-utils";
 import type { EventResponse } from "@/lib/types";
 import { CalendarOff } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 
 function applyFilters(
   events: EventResponse[],
@@ -127,15 +128,11 @@ export default function EventsPage() {
       )}
 
       {!loading && !error && filteredEvents.length === 0 && (
-        <div className="text-center py-20">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-muted mb-4">
-            <CalendarOff className="h-7 w-7 text-muted-foreground" />
-          </div>
-          <p className="font-heading font-semibold">No events found</p>
-          <p className="text-muted-foreground text-sm mt-1">
-            {dateFilter ? "No events on this date" : "Try adjusting your filters or create a new event"}
-          </p>
-        </div>
+        <EmptyState
+          icon={<CalendarOff className="h-7 w-7 text-muted-foreground" />}
+          title="No events found"
+          description={dateFilter ? "No events on this date" : "Try adjusting your filters or create a new event"}
+        />
       )}
 
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

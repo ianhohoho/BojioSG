@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Inbox as InboxIcon } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { useNotificationsContext } from "@/lib/notifications-context";
 import { NotificationRow } from "@/components/notification-row";
 
@@ -43,15 +44,11 @@ export default function InboxPage() {
       )}
 
       {!loading && notifications.length === 0 && (
-        <div className="text-center py-20">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-muted mb-4">
-            <InboxIcon className="h-7 w-7 text-muted-foreground" />
-          </div>
-          <p className="font-heading font-semibold">All caught up!</p>
-          <p className="text-muted-foreground text-sm mt-1">
-            No notifications yet
-          </p>
-        </div>
+        <EmptyState
+          icon={<InboxIcon className="h-7 w-7 text-muted-foreground" />}
+          title="All caught up!"
+          description="No notifications yet"
+        />
       )}
 
       <div className="space-y-3">
