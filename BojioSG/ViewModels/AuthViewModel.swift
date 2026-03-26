@@ -4,9 +4,18 @@ import Foundation
 final class AuthViewModel {
     var email = ""
     var password = ""
+    var confirmPassword = ""
     var errorMessage: String?
     var successMessage: String?
     var isLoading = false
+
+    var passwordsMatch: Bool {
+        !confirmPassword.isEmpty && password == confirmPassword
+    }
+
+    var passwordMismatch: Bool {
+        !confirmPassword.isEmpty && password != confirmPassword
+    }
 
     func login(authService: AuthService) async {
         guard !email.isEmpty, !password.isEmpty else {
@@ -37,6 +46,11 @@ final class AuthViewModel {
             return
         }
 
+        guard password == confirmPassword else {
+            errorMessage = "Passwords do not match"
+            return
+        }
+
         isLoading = true
         errorMessage = nil
         successMessage = nil
@@ -56,6 +70,7 @@ final class AuthViewModel {
     func clearForm() {
         email = ""
         password = ""
+        confirmPassword = ""
         errorMessage = nil
         successMessage = nil
     }
